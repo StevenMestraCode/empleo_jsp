@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/web/web/usuario/eliminar.jsp</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/src/java/modelo/CRUDusuario.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/src/java/modelo/CRUDempleo.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/web/web/empleo/modificar.jsp</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/src/java/modelo/usuario.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/web/web/empleo/listar.jsp</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/src/java/controladores/ServletUsuario.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/web/web/usuario/login.jsp</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/web/web/usuario/listar.jsp</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/web/web/empleo/agregar.jsp</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/src/java/controladores/ServletEmpleo.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/src/java/modelo/empleo.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/src/java/modelo/ConexionBaseDatos.java</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/web/web/usuario/buscar.jsp</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/web/web/empleo/buscar.jsp</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/web/web/empleo/eliminar.jsp</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/web/web/usuario/agregar.jsp</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/web/index.html</file>
+            <file>file:/C:/Users/ASUS/Documents/NetBeansProjects/empleo_jsp/web/web/usuario/modificar.jsp</file>
+        </group>
+    </open-files>
+</project-private>
