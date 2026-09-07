@@ -205,4 +205,20 @@ public class CRUDusuario {
             }
         }
     }
+
+    public usuario getAlguien() {
+        return alguien;
+    }
+
+    public void setAlguien(usuario alguien) {
+        this.alguien = alguien;
+    }
+
+    public ConexionBaseDatos getBaseDatos() {
+        return baseDatos;
+    }
+
+    public void setBaseDatos(ConexionBaseDatos baseDatos) {
+        this.baseDatos = baseDatos;
+    }
 }
