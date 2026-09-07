@@ -72,7 +72,12 @@ public class ServletUsuario extends HttpServlet {
                 request.getSession().setAttribute("usuario_buscar", alguien);
                 response.sendRedirect("web/usuario/buscar.jsp");
 
-            } else if (accion.equals("listar")) {
+            } else if(accion.equals("inicioSesion")){
+                CRUDusuario crud= new CRUDusuario();
+                usuario alguien = crud.inicioSesion(request.getParameter("correo"), request.getParameter("clave"));
+                request.getSession().setAttribute("usuario_inicioSesion", alguien);
+                response.sendRedirect("index.jsp?mensaje=Bienvenido " + alguien.getNombre());
+            }else if (accion.equals("listar")) {
                 CRUDusuario crud = new CRUDusuario();
                 usuario[] listado = crud.listarTodos();
                 request.getSession().setAttribute("usuario_listar", listado);
