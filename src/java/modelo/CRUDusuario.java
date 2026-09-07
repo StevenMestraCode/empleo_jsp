@@ -62,7 +62,7 @@ public class CRUDusuario {
             throw new Exception("El ID es necesario");
         }
         // Sentencia SQL para actualizar datos
-        String sqlUpdate = "UPDATE usuario"
+        String sqlUpdate = "UPDATE usuarios"
                 + "(setclave=?, nombre=?, correo=?, rol=?)"
                 + "WHERE id=?";
         try {
@@ -88,7 +88,7 @@ public class CRUDusuario {
             throw new Exception("El ID es necesario");
         }
         // Sentencia SQL para borrar un registro
-        String sqlUpdate = "DELETE usuario"
+        String sqlUpdate = "DELETE usuarios"
                 + "WHERE id=?";
         try {
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlUpdate);
@@ -109,7 +109,7 @@ public class CRUDusuario {
             throw new Exception("El correo y la clave son necesarias");
         }
         usuario alguien = null; ConexionBaseDatos baseDatos = null;
-        String sqlSelect = "SELECT * FROM usuario WHERE correo=? and clave=?";
+        String sqlSelect = "SELECT * FROM usuarios WHERE correo=? and clave=?";
         try {
             baseDatos = new ConexionBaseDatos();
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
@@ -144,7 +144,7 @@ public class CRUDusuario {
             throw new Exception("el Id es necesario para consultar Usuario");
         }
         usuario alguien = null; ConexionBaseDatos baseDatos = null;
-        String sqlSelect = "SELECT * FROM usuario WHERE correo=? and clave=?";
+        String sqlSelect = "SELECT * FROM usuarios WHERE correo=? and clave=?";
         try {
             baseDatos = new ConexionBaseDatos();
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
@@ -173,7 +173,7 @@ public class CRUDusuario {
     // READ: listar todos los usuarios de la tabla
     public usuario [] listarTodos()throws Exception{
         usuario alguien = null; ConexionBaseDatos baseDatos = null;
-        String sqlSelect = "SELECT * FROM usuario";
+        String sqlSelect = "SELECT * FROM usuarios";
         try {
             baseDatos = new ConexionBaseDatos();
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
