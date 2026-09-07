@@ -13,6 +13,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import modelo.CRUDusuario;
+import modelo.usuario;
 
 /**
  *
@@ -30,20 +32,58 @@ public class ServletUsuario extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+     // Método central: recibe todas las peticiones y decide qué hacer
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ServletUsuario</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ServletUsuario at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+
+        String accion = request.getParameter("accion"); // capturar la acción enviada desde el formulario
+
+        try {
+            if (accion.equals("agregar")) {
+                CRUDusuario crud = new CRUDusuario();
+                crud.getAlguien().setId(request.getParameter("id"));
+                crud.getAlguien().setClave(request.getParameter("clave"));
+                crud.getAlguien().setNombre(request.getParameter("nombre"));
+                crud.getAlguien().setCorreo(request.getParameter("correo"));
+                crud.getAlguien().setRol(request.getParameter("rol"));
+                crud.agregarUsuario();
+                response.sendRedirect("web/usuario/agregar.jsp?mensaje=Usuario agregado correctamente");
+
+            } else if (accion.equals("modificar")) {
+                CRUDusuario crud = new CRUDusuario();
+                crud.getAlguien().setId(request.getParameter("id"));
+                crud.getAlguien().setClave(request.getParameter("clave"));
+                crud.getAlguien().setNombre(request.getParameter("nombre"));
+                crud.getAlguien().setCorreo(request.getParameter("correo"));
+                crud.getAlguien().setRol(request.getParameter("rol"));
+                crud.modificarUsuario();
+                response.sendRedirect("web/usuario/modificar.jsp?mensaje=Usuario modificado correctamente");
+
+            } else if (accion.equals("eliminar")) {
+                CRUDusuario crud = new CRUDusuario();
+                crud.getAlguien().setId(request.getParameter("id"));
+                crud.eliminarUsuario();
+                response.sendRedirect("web/usuario/eliminar.jsp?mensaje=Usuario eliminado correctamente");
+
+            } else if (accion.equals("buscar")) {
+                CRUDusuario crud = new CRUDusuario();
+                usuario alguien = crud.consultarUsuario(request.getParameter("id"));
+                request.getSession().setAttribute("usuario_buscar", alguien);
+                response.sendRedirect("web/usuario/buscar.jsp");
+
+            } else if (accion.equals("listar")) {
+                CRUDusuario crud = new CRUDusuario();
+                usuario[] listado = crud.listarTodos();
+                request.getSession().setAttribute("usuario_listar", listado);
+                response.sendRedirect("web/usuario/listar.jsp");
+
+            } else {
+                response.sendRedirect("web/mensaje.jsp?mensaje=Acción no reconocida");
+            }
+
+        } catch (Exception e) {
+            response.sendRedirect("web/mensaje.jsp?mensaje=" + e.getMessage());
         }
     }
 
