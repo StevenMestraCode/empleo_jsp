@@ -11,7 +11,7 @@ package modelo;
  * @author ASUS
  */
 public class empleo {
-    private int id;
+    private String id;
     private String nombre;
     private String categoria;
     private String areaTrabajo;
@@ -21,11 +21,11 @@ public class empleo {
     private String funciones;
     private String cargoJefe;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
