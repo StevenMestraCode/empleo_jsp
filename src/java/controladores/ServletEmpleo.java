@@ -13,6 +13,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import modelo.CRUDempleo;
+import modelo.empleo;
 
 /**
  *
@@ -33,17 +35,58 @@ public class ServletEmpleo extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ServletEmpleo</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ServletEmpleo at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        String accion = request.getParameter("accion");
+         try {
+            if (accion.equals("agregar")) {
+                CRUDempleo crud = new CRUDempleo();
+                crud.getTrabajo().setId((request.getParameter("id")));
+                crud.getTrabajo().setNombre(request.getParameter("nombre"));
+                crud.getTrabajo().setCategoria(request.getParameter("categoria"));
+                crud.getTrabajo().setAreaTrabajo(request.getParameter("areaTrabajo"));
+                crud.getTrabajo().setEmpresa(request.getParameter("empresa"));
+                crud.getTrabajo().setNivel(request.getParameter("nivel"));
+                crud.getTrabajo().setSueldo(request.getParameter("sueldo"));
+                crud.getTrabajo().setFunciones(request.getParameter("funciones"));
+                crud.getTrabajo().setCargoJefe(request.getParameter("cargoJefe"));
+                response.sendRedirect("web/empleo/agregar.jsp?mensaje=Empleo agregado correctamente");
+
+            } else if (accion.equals("modificar")) {
+                CRUDempleo crud = new CRUDempleo();
+                crud.getTrabajo().setId((request.getParameter("id")));
+                crud.getTrabajo().setNombre(request.getParameter("nombre"));
+                crud.getTrabajo().setCategoria(request.getParameter("categoria"));
+                crud.getTrabajo().setAreaTrabajo(request.getParameter("areaTrabajo"));
+                crud.getTrabajo().setEmpresa(request.getParameter("empresa"));
+                crud.getTrabajo().setNivel(request.getParameter("nivel"));
+                crud.getTrabajo().setSueldo(request.getParameter("sueldo"));
+                crud.getTrabajo().setFunciones(request.getParameter("funciones"));
+                crud.getTrabajo().setCargoJefe(request.getParameter("cargoJefe"));
+                response.sendRedirect("web/empleo/modificar.jsp?mensaje=Empleo modificado correctamente");
+
+            } else if (accion.equals("eliminar")) {
+                CRUDempleo crud = new CRUDempleo();
+                crud.getTrabajo().setId(request.getParameter("id"));
+                crud.eliminarEmpleo();
+                response.sendRedirect("web/empleo/eliminar.jsp?mensaje=Empleo eliminado correctamente");
+
+            } else if (accion.equals("buscar")) {
+                CRUDempleo crud = new CRUDempleo();
+                empleo trabajo = crud.consultarEmpleo(request.getParameter("id"));
+                request.getSession().setAttribute("empleo_buscar", trabajo);
+                response.sendRedirect("web/empleo/buscar.jsp");
+
+            } else if (accion.equals("listar")) {
+                CRUDempleo crud = new CRUDempleo();
+                empleo [] listado = crud.listarTodos();
+                request.getSession().setAttribute("empleo_listar", listado);
+                response.sendRedirect("web/empleo/listar.jsp");
+
+            } else {
+                response.sendRedirect("web/mensaje.jsp?mensaje=Acción no reconocida");
+            }
+
+        } catch (Exception e) {
+            response.sendRedirect("web/mensaje.jsp?mensaje=" + e.getMessage());
         }
     }
 
