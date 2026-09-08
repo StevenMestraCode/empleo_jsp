@@ -20,7 +20,7 @@ import modelo.usuario;
  *
  * @author ASUS
  */
-@WebServlet(name = "ServletUsuario", urlPatterns = {"/ServletUsuario"})
+@WebServlet(name = "ServletUsuario", urlPatterns = {"/usuario"})
 public class ServletUsuario extends HttpServlet {
 
     /**
@@ -128,7 +128,7 @@ public class ServletUsuario extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Servletusuario: controla las acciones CRUD de Usuario";
     }// </editor-fold>
 
 }

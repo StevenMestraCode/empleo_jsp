@@ -20,7 +20,7 @@ import modelo.empleo;
  *
  * @author ASUS
  */
-@WebServlet(name = "ServletEmpleo", urlPatterns = {"/ServletEmpleo"})
+@WebServlet(name = "ServletEmpleo", urlPatterns = {"/empleo"})
 public class ServletEmpleo extends HttpServlet {
 
     /**
@@ -126,7 +126,7 @@ public class ServletEmpleo extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "ServletEmpleo: controla las acciones CRUD de empleos";
     }// </editor-fold>
 
 }

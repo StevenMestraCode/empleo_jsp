@@ -1,16 +1,41 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%
+    // Validar si hay sesión activa de usuario
+    if (request.getSession().getAttribute("usuario_login") == null) {
+        // Redirigir al login si no hay sesión
+        response.sendRedirect("web/usuario/login.jsp");
+        return; // detener ejecución del JSP
+    }
+%>
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html>
     <head>
-        <title>TODO supply a title</title>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width">
+        <title>Pantalla Principal</title>
     </head>
     <body>
-        <div>TODO write content</div>
+        <center>
+            <h2>Menú Principal</h2>
+            <hr/>
+            <table border="0" cellpadding="5">
+                <!-- Opciones para Usuarios -->
+                <tr><td><a href="web/usuario/agregar.jsp">Agregar Usuario</a></td></tr>
+                <tr><td><a href="web/usuario/buscar.jsp">Buscar Usuario</a></td></tr>
+                <tr><td><a href="web/usuario/modificar.jsp">Modificar Usuario</a></td></tr>
+                <tr><td><a href="web/usuario/eliminar.jsp">Eliminar Usuario</a></td></tr>
+                <tr><td><a href="usuario?accion=listar">Listar Usuarios</a></td></tr>
+
+                <!-- Opciones para Empleos -->
+                <tr><td><a href="web/empleo/agregar.jsp">Agregar Empleo</a></td></tr>
+                <tr><td><a href="web/empleo/buscar.jsp">Buscar Empleo</a></td></tr>
+                <tr><td><a href="web/empleo/modificar.jsp">Modificar Empleo</a></td></tr>
+                <tr><td><a href="web/empleo/eliminar.jsp">Eliminar Empleo</a></td></tr>
+                <tr><td><a href="empleo?accion=listar">Listar Empleos</a></td></tr>
+
+                <!-- Cerrar sesión -->
+                <tr><td><a href="usuario?accion=salir">Cerrar Sesión</a></td></tr>
+            </table>
+            <hr/>
+        </center>
     </body>
 </html>
