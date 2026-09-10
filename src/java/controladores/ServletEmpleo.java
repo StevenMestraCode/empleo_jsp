@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package controladores;
 
 import java.io.IOException;
@@ -36,7 +35,7 @@ public class ServletEmpleo extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String accion = request.getParameter("accion");
-         try {
+        try {
             if (accion.equals("agregar")) {
                 CRUDempleo crud = new CRUDempleo();
                 crud.getTrabajo().setId((request.getParameter("id")));
@@ -77,11 +76,23 @@ public class ServletEmpleo extends HttpServlet {
 
             } else if (accion.equals("listar")) {
                 CRUDempleo crud = new CRUDempleo();
-                empleo [] listado = crud.listarTodos();
+                empleo[] listado = crud.listarTodos();
                 request.getSession().setAttribute("empleo_listar", listado);
                 response.sendRedirect("web/empleo/listar.jsp");
 
-            } else {
+            } else if (accion.equals("reporteEmpresa")) {
+                String empresa = request.getParameter("empresa");
+                CRUDempleo crud = new CRUDempleo();
+                empleo[] listado = crud.listarPorEmpresa(empresa);
+                request.getSession().setAttribute("empleo_reporte_empresa", listado);
+                response.sendRedirect("web/empleo/reporteEmpleoEmpresa.jsp");
+            } else if (accion.equals("reporteAreatrabajo")) {
+                String areaTrabajo = request.getParameter("areaTrabajo");
+                CRUDempleo crud = new CRUDempleo();
+                empleo[] listado = crud.listarPorAreaTrabajo(areaTrabajo);
+                request.getSession().setAttribute("empleo_reporte_area_trabajo", listado);
+                response.sendRedirect("web/empleo/reporteEmpleoAreaTrabajo.jsp");
+            }else {
                 response.sendRedirect("web/mensaje.jsp?mensaje=Acción no reconocida");
             }
 
