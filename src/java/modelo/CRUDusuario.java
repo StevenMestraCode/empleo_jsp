@@ -62,9 +62,7 @@ public class CRUDusuario {
             throw new Exception("El ID es necesario");
         }
         // Sentencia SQL para actualizar datos
-        String sqlUpdate = "UPDATE usuarios"
-                + "(setclave=?, nombre=?, correo=?, rol=?)"
-                + "WHERE id=?";
+        String sqlUpdate = "UPDATE usuarios SET clave=?, nombre=?, correo=?, rol=? WHERE id=?";
         try {
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlUpdate);
             sentenciaSQL.setString(1, alguien.getId());
@@ -88,8 +86,7 @@ public class CRUDusuario {
             throw new Exception("El ID es necesario");
         }
         // Sentencia SQL para borrar un registro
-        String sqlUpdate = "DELETE usuarios"
-                + "WHERE id=?";
+        String sqlUpdate = "DELETE FROM usuarios WHERE id=?";
         try {
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlUpdate);
             sentenciaSQL.setString(1, alguien.getId());
@@ -115,8 +112,8 @@ public class CRUDusuario {
             baseDatos = new ConexionBaseDatos();
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
             // Asignar parámetros de login
-            sentenciaSQL.setString(1, alguien.getCorreo());
-            sentenciaSQL.setString(2, alguien.getClave());
+            sentenciaSQL.setString(1, correo);
+            sentenciaSQL.setString(2, clave);
             ResultSet resultado = baseDatos.consultar(sentenciaSQL);
             // Si existe el usuario, llenar el objeto con sus datos
             if (resultado.next() == true) {
@@ -241,11 +238,11 @@ public class CRUDusuario {
         }
         usuario alguien = null;
         ConexionBaseDatos baseDatos = null;
-        String sqlSelect = "SELECT * FROM usuarios WHERE correo=? and clave=?";
+        String sqlSelect = "SELECT * FROM usuarios WHERE id=?";
         try {
             baseDatos = new ConexionBaseDatos();
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
-            sentenciaSQL.setString(1, alguien.getId());
+            sentenciaSQL.setString(1, id);
             ResultSet resultado = baseDatos.consultar(sentenciaSQL);
             if (resultado.next() == true) {
                 alguien = new usuario();
