@@ -171,6 +171,83 @@ public class CRUDempleo {
             }
         }
     }
+    // Método para listar empleos por area de trabajo
+    public empleo[] listarPorAreaTrabajo (String areaTrabajo) throws Exception {
+        empleo trabajo = null;
+        ConexionBaseDatos baseDatos = null;
+        String sqlSelect = "SELECT * FROM empleo WHERE areaTrabajo=?";
+        try {
+            baseDatos = new ConexionBaseDatos();
+            PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
+            sentenciaSQL.setString(1, areaTrabajo);
+            ResultSet resultado = baseDatos.consultar(sentenciaSQL);
+
+            // Contar filas
+            resultado.last();
+            empleo[] listado = new empleo[resultado.getRow()];
+            resultado.beforeFirst();
+
+            int i = 0;
+            while (resultado.next()) {
+                trabajo = new empleo();
+                trabajo.setId(resultado.getString("id"));
+                trabajo.setNombre(resultado.getString("nombre"));
+                trabajo.setCategoria(resultado.getString("categoria"));
+                trabajo.setAreaTrabajo(resultado.getString("areaTrabajo"));
+                trabajo.setEmpresa(resultado.getString("empresa"));
+                trabajo.setNivel(resultado.getString("nivel"));
+                trabajo.setSueldo(resultado.getString("sueldo"));
+                trabajo.setFunciones(resultado.getString("funciones"));
+                trabajo.setCargoJefe(resultado.getString("cargoJefe"));
+                listado[i++] = trabajo;
+            }
+            return listado;
+        } catch (Exception error) {
+            throw new Exception("Error al listar empleos por area de trabajo: " + error.getMessage());
+        } finally {
+            if (baseDatos != null) {
+                baseDatos.desconectar();
+            }
+        }
+    }
+    public empleo[] listarPorEmpresa(String empresa) throws Exception {
+        empleo trabajo = null;
+        ConexionBaseDatos baseDatos = null;
+        String sqlSelect = "SELECT * FROM empleo WHERE empresa=?";
+        try {
+            baseDatos = new ConexionBaseDatos();
+            PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
+            sentenciaSQL.setString(1, empresa);
+            ResultSet resultado = baseDatos.consultar(sentenciaSQL);
+
+            // Contar filas
+            resultado.last();
+            empleo[] listado = new empleo[resultado.getRow()];
+            resultado.beforeFirst();
+
+            int i = 0;
+            while (resultado.next()) {
+                trabajo = new empleo();
+                trabajo.setId(resultado.getString("id"));
+                trabajo.setNombre(resultado.getString("nombre"));
+                trabajo.setCategoria(resultado.getString("categoria"));
+                trabajo.setAreaTrabajo(resultado.getString("areaTrabajo"));
+                trabajo.setEmpresa(resultado.getString("empresa"));
+                trabajo.setNivel(resultado.getString("nivel"));
+                trabajo.setSueldo(resultado.getString("sueldo"));
+                trabajo.setFunciones(resultado.getString("funciones"));
+                trabajo.setCargoJefe(resultado.getString("cargoJefe"));
+                listado[i++] = trabajo;
+            }
+            return listado;
+        } catch (Exception error) {
+            throw new Exception("Error al listar empleos por empresa: " + error.getMessage());
+        } finally {
+            if (baseDatos != null) {
+                baseDatos.desconectar();
+            }
+        }
+    }
 
     public empleo getTrabajo() {
         return trabajo;
