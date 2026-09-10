@@ -17,7 +17,7 @@ import java.sql.SQLException;
  * @author ASUS
  */
 public class ConexionBaseDatos {
-    protected String driver = "com.mysql.cj.jdbc.Driver";
+    protected String driver = "com.mysql.jdbc.Driver";
     protected String url = "jdbc:mysql://";
     protected String IPServidor = "localhost:";
     protected int puerto = 3306;
@@ -30,7 +30,7 @@ public class ConexionBaseDatos {
     private ResultSet filasConsulta;
     
     public ConexionBaseDatos ( ) throws Exception{
-       url = url+IPServidor+puerto+nombreBD+complemento;
+       url = url+IPServidor+puerto+"/"+nombreBD+complemento;
        this.conectar();
     }
     public ConexionBaseDatos (String driver, String url, String IPServidor, int puerto, String nombreBD, 
