@@ -17,28 +17,26 @@ import java.sql.SQLException;
  * @author ASUS
  */
 public class ConexionBaseDatos {
-    protected String driver = "com.mysql.jdbc.Driver";
-    protected String url = "jdbc:mysql://";
-    protected String IPServidor = "localhost:";
-    protected int puerto = 3306;
-    protected String nombreBD = "empleodb";
-    protected String complemento = "?zeroDateTimeBehavior=convertToNull";
-    protected String Usuario = "estudiante";
-    protected String password = "1234";
+    protected String driver = "org.postgresql.Driver";
+    protected String url = "jdbc:postgresql://";
+    protected String host = "dpg-daikf65g1s2s73fn5nvg-a"; // Host de render
+    protected int puerto = 5432;                          // Puerto de Postgres
+    protected String nombreBD = "empleodb";               // Nombre de la BD
+    protected String usuario = "estudiante";              // Usuario
+    protected String password = "QQOKXlfrIWugK6WJtJe5yeCbW82upDfa"; // Contraseña
     private Connection conexion;
     private PreparedStatement sentencia;
     private ResultSet filasConsulta;
     
     public ConexionBaseDatos ( ) throws Exception{
-       url = url+IPServidor+puerto+"/"+nombreBD+complemento;
+       url = url+host+":"+puerto+"/"+nombreBD;
        this.conectar();
     }
     public ConexionBaseDatos (String driver, String url, String IPServidor, int puerto, String nombreBD, 
             String complemento, String Usuario, String password ) throws Exception{
         this.driver = driver;
-        this.Usuario = Usuario;
-        this.IPServidor = IPServidor;
-        this.complemento = complemento;
+        this.usuario = Usuario;
+        this.host = IPServidor;
         this.nombreBD = nombreBD;
         this.password = password;
         this.puerto = puerto;
@@ -53,7 +51,7 @@ public class ConexionBaseDatos {
                 throw new Exception("Error de Driver "+ex.getMessage());
         } 
         try {
-            conexion =DriverManager.getConnection(url, Usuario, password);
+            conexion =DriverManager.getConnection(url, usuario, password);
         }catch (SQLException ex) {
         throw new Exception("Error de Conexión \n Código:" + ex.getErrorCode() +
                             " Explicación:" + ex.getMessage());
@@ -118,13 +116,14 @@ public class ConexionBaseDatos {
         this.url = url;
     }
 
-    public String getIPServidor() {
-        return IPServidor;
+    public String getHost() {
+        return host;
     }
 
-    public void setIPServidor(String IPServidor) {
-        this.IPServidor = IPServidor;
+    public void setHost(String host) {
+        this.host = host;
     }
+
 
     public int getPuerto() {
         return puerto;
@@ -142,20 +141,13 @@ public class ConexionBaseDatos {
         this.nombreBD = nombreBD;
     }
 
-    public String getComplemento() {
-        return complemento;
-    }
-
-    public void setComplemento(String complemento) {
-        this.complemento = complemento;
-    }
 
     public String getUsuario() {
-        return Usuario;
+        return usuario;
     }
 
     public void setUsuario(String Usuario) {
-        this.Usuario = Usuario;
+        this.usuario = Usuario;
     }
 
     public String getPassword() {
