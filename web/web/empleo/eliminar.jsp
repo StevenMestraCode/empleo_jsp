@@ -10,63 +10,70 @@
         getServletContext().getRequestDispatcher("/web/usuario/login.jsp").forward(request, response);
     }
     String mensaje = request.getParameter("mensaje");
-    empleo trabajo = (empleo) request.getSession().getAttribute("empleo_buscar");
+    // Usamos la misma clave que el servlet guarda
+    empleo trabajo = (empleo) request.getSession().getAttribute("empleo_buscarEliminar");
 %>
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Eliminar Empleo</title>
-    </head>
-    <body>
-        <center>
-            <h1>Eliminar Empleo</h1>
-            <hr/>
-            <!-- Formulario para buscar empleo -->
-            <form action="<%=request.getContextPath()%>/empleo?accion=buscar&redir=eliminar" method="post">
-                <table>
-                    <tr>
-                        <td style="text-align: right;">ID:</td>
-                        <td><input type="text" name="id"/></td>
-                    </tr>
-                    <tr>
-                        <td><input type="submit" value="Buscar"/></td>
-                        <td><input type="reset" value="Limpiar"/></td>
-                    </tr>
-                </table>
-            </form>
-            <hr/>
-            <!-- Mostrar datos si se encontró -->
-            <%
-                if (trabajo != null) {
-            %>
-            <table>
-                <tr><td>Nombre:</td><td><%= trabajo.getNombre() %></td></tr>
-                <tr><td>Empresa:</td><td><%= trabajo.getEmpresa() %></td></tr>
-                <tr><td>Categoría:</td><td><%= trabajo.getCategoria() %></td></tr>
-                <tr><td>Área:</td><td><%= trabajo.getAreaTrabajo() %></td></tr>
-                <tr><td>Nivel:</td><td><%= trabajo.getNivel() %></td></tr>
-                <tr><td>Sueldo:</td><td><%= trabajo.getSueldo() %></td></tr>
-            </table>
-            <form action="empleo?accion=eliminar" method="post">
-                <input type="hidden" name="id" value="<%= trabajo.getId() %>"/>
-                <input type="submit" value="Eliminar Empleo"/>
-            </form>
-                <hr/>
-            <!-- Botón para volver al menú principal -->
-            <form action="<%=request.getContextPath()%>/index.jsp" method="get">
-                <input type="submit" value="Volver al Menú Principal"/>
-            </form>
-            <hr/>
-            <%
-                }
-            %>
-            <p style="color:#FF0000;">
-                <%= (mensaje != null && !mensaje.isEmpty()) ? mensaje : "" %>
-            </p>
-            <%
-                request.getSession().setAttribute("empleo_buscar", null);
-            %>
-        </center>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <title>Eliminar Empleo</title>
+</head>
+<body>
+<center>
+    <h1>Eliminar Empleo</h1>
+    <hr/>
+    <!-- Formulario para buscar empleo -->
+    <form action="<%=request.getContextPath()%>/empleo?accion=buscarEliminar" method="post">
+        <table>
+            <tr>
+                <td style="text-align: right;">ID:</td>
+                <td><input type="text" name="id"/></td>
+            </tr>
+            <tr>
+                <td><input type="submit" value="Buscar"/></td>
+                <td><input type="reset" value="Limpiar"/></td>
+            </tr>
+        </table>
+    </form>
+    <hr/>
+    <!-- Mostrar datos si se encontró -->
+    <%
+        if (trabajo != null) {
+    %>
+    <table>
+        <tr><td>ID:</td><td><%= trabajo.getId() %></td></tr>
+        <tr><td>Nombre:</td><td><%= trabajo.getNombre() %></td></tr>
+        <tr><td>Empresa:</td><td><%= trabajo.getEmpresa() %></td></tr>
+        <tr><td>Categoría:</td><td><%= trabajo.getCategoria() %></td></tr>
+        <tr><td>Área:</td><td><%= trabajo.getAreaTrabajo() %></td></tr>
+        <tr><td>Nivel:</td><td><%= trabajo.getNivel() %></td></tr>
+        <tr><td>Sueldo:</td><td><%= trabajo.getSueldo() %></td></tr>
+        <tr><td>Funciones:</td><td><%= trabajo.getFunciones() %></td></tr>
+        <tr><td>Cargo Jefe:</td><td><%= trabajo.getCargoJefe() %></td></tr>
+    </table>
+    <form action="<%=request.getContextPath()%>/empleo?accion=eliminar" method="post">
+        <input type="hidden" name="id" value="<%= trabajo.getId() %>"/>
+        <input type="submit" value="Eliminar Empleo"/>
+    </form>
+    <hr/>
+    <%
+        }
+    %>
+    <p style="color:#FF0000;">
+        <%= (mensaje != null && !mensaje.isEmpty()) ? mensaje : "" %>
+    </p>
+    <%
+        // Limpiamos la sesión para evitar que se quede cargado
+        request.getSession().setAttribute("empleo_buscarEliminar", null);
+    %>
+    <hr/>
+    <!-- Botón para volver al menú principal -->
+    <form action="<%=request.getContextPath()%>/index.jsp" method="get">
+        <input type="submit" value="Volver al Menú Principal"/>
+    </form>
+    <hr/>
+</center>
+</body>
 </html>
+

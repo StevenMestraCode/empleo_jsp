@@ -8,76 +8,81 @@
 <%@page import="modelo.empleo" %>
 
 <%
-    empleo listado[] = (empleo[]) session.getAttribute("empleo_listar");
+    empleo[] listado = (empleo[]) session.getAttribute("empleo_listar");
     String mensaje = null;
-    if (listado == null || listado.length <= 0) {
+    if (listado == null || listado.length == 0) {
         mensaje = "Resultado: 0 Empleos encontrados en el Sistema";
     }
 %>
 
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Listar Empleos</title>
-    </head>
-    <body>
-        <center>
-            <h1>Todos los Empleos en el Sistema</h1>
+<head>
+    <meta charset="UTF-8">
+    <title>Listar Empleos</title>
+</head>
+<body>
+<center>
+    <h1>Todos los Empleos en el Sistema</h1>
+    <hr/>
+    <%
+        if (mensaje != null) {
+    %>
+        <p style="color:red;"><%= mensaje %></p>
+    <%
+        } else {
+    %>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Área</th>
+                <th>Empresa</th>
+                <th>Nivel</th>
+                <th>Sueldo</th>
+                <th>Funciones</th>
+                <th>Cargo Jefe</th>
+            </tr>
+        </thead>
+        <tbody>
             <%
-                if (mensaje != null) {
-                    out.print(mensaje);
-                } else {
+                int contador = 0;
+                for (empleo trabajo : listado) {
+                    contador++;
             %>
-            <table border="1">
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Categoría</th>
-                        <th>Área</th>
-                        <th>Empresa</th>
-                        <th>Nivel</th>
-                        <th>Sueldo</th>
-                        <th>Funciones</th>
-                        <th>Cargo Jefe</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <%
-                        int contador = 0;
-                        for (empleo trabajo : listado) {
-                            contador++;
-                    %>
-                    <tr>
-                        <td><%= contador %></td>
-                        <td><%= trabajo.getId() %></td>
-                        <td><%= trabajo.getNombre() %></td>
-                        <td><%= trabajo.getCategoria() %></td>
-                        <td><%= trabajo.getAreaTrabajo() %></td>
-                        <td><%= trabajo.getEmpresa() %></td>
-                        <td><%= trabajo.getNivel() %></td>
-                        <td><%= trabajo.getSueldo() %></td>
-                        <td><%= trabajo.getFunciones() %></td>
-                        <td><%= trabajo.getCargoJefe() %></td>
-                    </tr>
-                    <%
-                        }
-                    %>
-                </tbody>
-            </table>
-                <hr/>
-            <!-- Botón para volver al menú principal -->
-            <form action="<%=request.getContextPath()%>/index.jsp" method="get">
-                <input type="submit" value="Volver al Menú Principal"/>
-            </form>
-            <hr/>
+            <tr>
+                <td><%= contador %></td>
+                <td><%= trabajo.getId() %></td>
+                <td><%= trabajo.getNombre() %></td>
+                <td><%= trabajo.getCategoria() %></td>
+                <td><%= trabajo.getAreaTrabajo() %></td>
+                <td><%= trabajo.getEmpresa() %></td>
+                <td><%= trabajo.getNivel() %></td>
+                <td><%= trabajo.getSueldo() %></td>
+                <td><%= trabajo.getFunciones() %></td>
+                <td><%= trabajo.getCargoJefe() %></td>
+            </tr>
             <%
                 }
             %>
-            <br>
-            <a href="../../index.jsp">« VOLVER AL MENÚ</a>
-        </center>
-    </body>
+        </tbody>
+    </table>
+    <hr/>
+    <!-- Botón para volver al menú principal -->
+    <form action="<%=request.getContextPath()%>/index.jsp" method="get">
+        <input type="submit" value="Volver al Menú Principal"/>
+    </form>
+    <hr/>
+    <%
+        }
+        // Limpiar la sesión para evitar datos viejos
+        session.setAttribute("empleo_listar", null);
+    %>
+    <br/>
+    <a href="<%=request.getContextPath()%>/index.jsp">« VOLVER AL MENÚ</a>
+</center>
+</body>
 </html>
