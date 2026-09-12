@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package modelo;
 
 import java.sql.PreparedStatement;
@@ -14,23 +13,21 @@ import java.sql.ResultSet;
  * @author ASUS
  */
 public class CRUDempleo {
-    // Atributo que representa un objeto empleo
+
     private empleo trabajo;
-    // Atributo para manejar la conexión con la base de datos
     private ConexionBaseDatos baseDatos;
-    
-    // Constructor: inicializa un empleo vacío y abre conexión a la BD
+
     public CRUDempleo() throws Exception {
         this.trabajo = new empleo();
         this.baseDatos = new ConexionBaseDatos();
     }
 
-    // CREATE: método para agregar un empleo a la BD
+    // CREATE
     public void agregarEmpleo() throws Exception {
-        if (trabajo.getId()== null || trabajo.getId().isEmpty()) {
+        if (trabajo.getId() == null || trabajo.getId().isEmpty()) {
             throw new Exception("El ID es necesario y debe ser mayor a 0");
         }
-        String sqlInsert = "INSERT INTO empleos "
+        String sqlInsert = "INSERT INTO empleo "
                 + "(id, nombre, categoria, areaTrabajo, empresa, nivel, sueldo, funciones, cargoJefe) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
@@ -46,20 +43,19 @@ public class CRUDempleo {
             sentenciaSQL.setString(9, trabajo.getCargoJefe());
             baseDatos.actualizar(sentenciaSQL);
         } catch (Exception error) {
-            throw new Exception("Error al agregar el empleo " + trabajo.getId() +
-                    " <br/> Explicación: " + error.getMessage());
+            throw new Exception("Error al agregar el empleo " + trabajo.getId()
+                    + " <br/> Explicación: " + error.getMessage());
         } finally {
             baseDatos.desconectar();
         }
     }
 
-    // UPDATE: método para modificar datos de un empleo existente
+    // UPDATE
     public void modificarEmpleo() throws Exception {
-        if (trabajo.getId()== null || trabajo.getId().isEmpty() ) {
+        if (trabajo.getId() == null || trabajo.getId().isEmpty()) {
             throw new Exception("El ID es necesario y debe ser mayor a 0");
         }
-        String sqlUpdate = "UPDATE empleos "
-                + "SET nombre=?, categoria=?, areaTrabajo=?, empresa=?, nivel=?, sueldo=?, funciones=?, cargoJefe=? WHERE id=?";
+        String sqlUpdate = "UPDATE empleo SET nombre=?, categoria=?, areaTrabajo=?, empresa=?, nivel=?, sueldo=?, funciones=?, cargoJefe=? WHERE id=?";
         try {
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlUpdate);
             sentenciaSQL.setString(1, trabajo.getNombre());
@@ -73,38 +69,42 @@ public class CRUDempleo {
             sentenciaSQL.setString(9, trabajo.getId());
             baseDatos.actualizar(sentenciaSQL);
         } catch (Exception error) {
-            throw new Exception("Error al actualizar el empleo " + trabajo.getId() +
-                    " <br/> Explicación: " + error.getMessage());
+            throw new Exception("Error al actualizar el empleo " + trabajo.getId()
+                    + " <br/> Explicación: " + error.getMessage());
         } finally {
             baseDatos.desconectar();
         }
     }
 
-    // DELETE: método para eliminar un empleo por su ID
-    public void eliminarEmpleo() throws Exception {
-        if (trabajo.getId()== null || trabajo.getId().isEmpty()) {
+    // DELETE
+    public void eliminarEmpleo(String id) throws Exception {
+        if (id == null || id.isEmpty()) {
             throw new Exception("El ID es necesario y debe ser mayor a 0");
         }
-        String sqlDelete = "DELETE FROM empleos WHERE id=?";
+        String sqlDelete = "DELETE FROM empleo WHERE id=?";
         try {
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlDelete);
-            sentenciaSQL.setString(1, trabajo.getId());
-            baseDatos.actualizar(sentenciaSQL);
+            sentenciaSQL.setString(1, id);
+            int filas = baseDatos.actualizar(sentenciaSQL);
+            if (filas == 0) {
+                throw new Exception("No se encontró empleo con ID " + id);
+            }
         } catch (Exception error) {
-            throw new Exception("Error al eliminar el empleo " + trabajo.getId() +
-                    " <br/> Explicación: " + error.getMessage());
+            throw new Exception("Error al eliminar el empleo " + id
+                    + " <br/> Explicación: " + error.getMessage());
         } finally {
             baseDatos.desconectar();
         }
     }
 
-    // READ: consultar un empleo por su ID
+    // READ: consultar por ID
     public empleo consultarEmpleo(String id) throws Exception {
-        if (trabajo.getId()== null || trabajo.getId().isEmpty()) {
+        if (id == null || id.isEmpty()) {
             throw new Exception("El ID es necesario y debe ser mayor a 0");
         }
-        empleo trabajo = null; ConexionBaseDatos baseDatos = null;
-        String sqlSelect = "SELECT * FROM empleos WHERE id=?";
+        empleo trabajo = null;
+        ConexionBaseDatos baseDatos = null;
+        String sqlSelect = "SELECT * FROM empleo WHERE id=?";
         try {
             baseDatos = new ConexionBaseDatos();
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
@@ -123,10 +123,8 @@ public class CRUDempleo {
                 trabajo.setCargoJefe(resultado.getString("cargoJefe"));
                 return trabajo;
             } else {
-                throw new Exception("Error al consultar el empleo " + id + "<br/> Explicación: No existe");
+                throw new Exception("No existe empleo con ID " + id);
             }
-        } catch (Exception error) {
-            throw new Exception(error.getMessage() + " El empleo no existe en la base de datos");
         } finally {
             if (baseDatos != null) {
                 baseDatos.desconectar();
@@ -134,10 +132,11 @@ public class CRUDempleo {
         }
     }
 
-    // READ: listar todos los empleos de la tabla
+    // READ: listar todos
     public empleo[] listarTodos() throws Exception {
-        empleo trabajo = null; ConexionBaseDatos baseDatos = null;
-        String sqlSelect = "SELECT * FROM empleos";
+        empleo trabajo = null;
+        ConexionBaseDatos baseDatos = null;
+        String sqlSelect = "SELECT * FROM empleo";
         try {
             baseDatos = new ConexionBaseDatos();
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
@@ -159,20 +158,16 @@ public class CRUDempleo {
                 trabajo.setCargoJefe(resultado.getString("cargoJefe"));
                 listado[index++] = trabajo;
             }
-            if (listado.length <= 0) {
-                throw new Exception("Error al listar todos los empleos <br/> Explicación: No hay registros");
-            }
             return listado;
-        } catch (Exception error) {
-            throw new Exception(error.getMessage() + " La base de datos está vacía");
         } finally {
             if (baseDatos != null) {
                 baseDatos.desconectar();
             }
         }
     }
-    // Método para listar empleos por area de trabajo
-    public empleo[] listarPorAreaTrabajo (String areaTrabajo) throws Exception {
+
+    // READ: listar por área
+    public empleo[] listarPorAreaTrabajo(String areaTrabajo) throws Exception {
         empleo trabajo = null;
         ConexionBaseDatos baseDatos = null;
         String sqlSelect = "SELECT * FROM empleo WHERE areaTrabajo=?";
@@ -181,12 +176,9 @@ public class CRUDempleo {
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
             sentenciaSQL.setString(1, areaTrabajo);
             ResultSet resultado = baseDatos.consultar(sentenciaSQL);
-
-            // Contar filas
             resultado.last();
             empleo[] listado = new empleo[resultado.getRow()];
             resultado.beforeFirst();
-
             int i = 0;
             while (resultado.next()) {
                 trabajo = new empleo();
@@ -202,14 +194,14 @@ public class CRUDempleo {
                 listado[i++] = trabajo;
             }
             return listado;
-        } catch (Exception error) {
-            throw new Exception("Error al listar empleos por area de trabajo: " + error.getMessage());
         } finally {
             if (baseDatos != null) {
                 baseDatos.desconectar();
             }
         }
     }
+
+    // READ: listar por empresa
     public empleo[] listarPorEmpresa(String empresa) throws Exception {
         empleo trabajo = null;
         ConexionBaseDatos baseDatos = null;
@@ -219,12 +211,9 @@ public class CRUDempleo {
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
             sentenciaSQL.setString(1, empresa);
             ResultSet resultado = baseDatos.consultar(sentenciaSQL);
-
-            // Contar filas
             resultado.last();
             empleo[] listado = new empleo[resultado.getRow()];
             resultado.beforeFirst();
-
             int i = 0;
             while (resultado.next()) {
                 trabajo = new empleo();

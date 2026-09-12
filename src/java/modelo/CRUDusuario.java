@@ -57,24 +57,21 @@ public class CRUDusuario {
 
     // UPDATE: método para modificar datos de un usuario existente
     public void modificarUsuario() throws Exception {
-        // Validación: el ID es obligatorio
         if (alguien.getId() == null || alguien.getId().isEmpty()) {
             throw new Exception("El ID es necesario");
         }
-        // Sentencia SQL para actualizar datos
         String sqlUpdate = "UPDATE usuarios SET clave=?, nombre=?, correo=?, rol=? WHERE id=?";
         try {
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlUpdate);
-            sentenciaSQL.setString(1, alguien.getId());
-            sentenciaSQL.setString(2, alguien.getClave());
-            sentenciaSQL.setString(3, alguien.getNombre());
-            sentenciaSQL.setString(4, alguien.getCorreo());
-            sentenciaSQL.setString(5, alguien.getRol());
-            // Ejecutar el UPDATE
+            sentenciaSQL.setString(1, alguien.getClave());
+            sentenciaSQL.setString(2, alguien.getNombre());
+            sentenciaSQL.setString(3, alguien.getCorreo());
+            sentenciaSQL.setString(4, alguien.getRol());
+            sentenciaSQL.setString(5, alguien.getId());
             baseDatos.actualizar(sentenciaSQL);
         } catch (Exception error) {
-            throw new Exception("Error al actualizar el usuario" + alguien.getId()
-                    + " <br/> explicacion: " + error.getMessage());
+            throw new Exception("Error al actualizar el usuario " + alguien.getId()
+                    + " <br/> Explicacion: " + error.getMessage());
         } finally {
             baseDatos.desconectar();
         }
@@ -266,45 +263,47 @@ public class CRUDusuario {
 
     // READ: listar todos los usuarios de la tabla
     public usuario[] listarTodos() throws Exception {
-        usuario alguien = null;
         ConexionBaseDatos baseDatos = null;
         String sqlSelect = "SELECT * FROM usuarios";
         try {
             baseDatos = new ConexionBaseDatos();
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
             ResultSet resultado = baseDatos.consultar(sentenciaSQL);
-            // Mover cursor al final para contar filas
+
             resultado.last();
-            usuario[] listado = new usuario[resultado.getRow()];
+            int total = resultado.getRow();
+            if (total == 0) {
+                throw new Exception("No existen usuarios en la base de datos");
+            }
+
+            usuario[] listado = new usuario[total];
             resultado.beforeFirst();
-            // Recorrer resultados y llenar el array
-            while (resultado.next() == true) {
-                alguien = new usuario();
+            int index = 0;
+
+            while (resultado.next()) {
+                usuario alguien = new usuario();
                 alguien.setId(resultado.getString("id"));
                 alguien.setClave(resultado.getString("clave"));
                 alguien.setNombre(resultado.getString("nombre"));
                 alguien.setCorreo(resultado.getString("correo"));
                 alguien.setRol(resultado.getString("rol"));
-                listado[resultado.getRow()] = alguien;
-            }
-            if (listado.length <= 0) {
-                throw new Exception("Error al listar todos los usuarios"
-                        + "<br/> Explicacion: ");
+                listado[index++] = alguien; // ✅ usamos contador manual
             }
             return listado;
         } catch (Exception error) {
-            throw new Exception(error.getMessage() + "La base de datos esta vacia");
+            throw new Exception("Error al listar todos los usuarios: " + error.getMessage());
         } finally {
             if (baseDatos != null) {
                 baseDatos.desconectar();
             }
         }
     }
+
 // Metodo para buscar al usuario por el correo colocado, necesario para poder enviar el correo para recuperacion de contraseña
     public usuario buscarPorCorreo(String correo) throws Exception {
         usuario alguien = null;
         ConexionBaseDatos baseDatos = null;
-        String sql = "SELECT * FROM usuario WHERE correo=?";
+        String sql = "SELECT * FROM usuarios WHERE correo=?";
         try {
             baseDatos = new ConexionBaseDatos();
             PreparedStatement ps = baseDatos.crearSentencia(sql);
