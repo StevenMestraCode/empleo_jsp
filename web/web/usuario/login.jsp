@@ -11,7 +11,7 @@
 
     // Si ya hay sesión activa, redirigir al menú principal
     if (request.getSession().getAttribute("usuario_login") != null) {
-        getServletContext().getRequestDispatcher("/index.html").forward(request, response);
+        getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
     }
 %>
 
@@ -46,7 +46,7 @@
     <!-- Enlace para recuperar clave -->
     <p>
         ¿Olvidaste tu contraseña?
-        <a href="<%=request.getContextPath()%>/web/usuario/recuperarClave.jsp">Recuperar Clave</a>
+        <a href="<%=request.getContextPath()%>/web/usuario/recuperacionClave.jsp">Recuperar Clave</a>
     </p>
     <hr/>
     <!-- Mostrar mensaje dinámico -->
