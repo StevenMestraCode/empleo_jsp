@@ -19,80 +19,101 @@ import modelo.empleo;
  *
  * @author ASUS
  */
+
 @WebServlet(name = "ServletEmpleo", urlPatterns = {"/empleo"})
 public class ServletEmpleo extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String accion = request.getParameter("accion");
+
         try {
-            if (accion.equals("agregar")) {
-                CRUDempleo crud = new CRUDempleo();
-                crud.getTrabajo().setId((request.getParameter("id")));
-                crud.getTrabajo().setNombre(request.getParameter("nombre"));
-                crud.getTrabajo().setCategoria(request.getParameter("categoria"));
-                crud.getTrabajo().setAreaTrabajo(request.getParameter("areaTrabajo"));
-                crud.getTrabajo().setEmpresa(request.getParameter("empresa"));
-                crud.getTrabajo().setNivel(request.getParameter("nivel"));
-                crud.getTrabajo().setSueldo(request.getParameter("sueldo"));
-                crud.getTrabajo().setFunciones(request.getParameter("funciones"));
-                crud.getTrabajo().setCargoJefe(request.getParameter("cargoJefe"));
-                response.sendRedirect("web/empleo/agregar.jsp?mensaje=Empleo agregado correctamente");
-
-            } else if (accion.equals("modificar")) {
-                CRUDempleo crud = new CRUDempleo();
-                crud.getTrabajo().setId((request.getParameter("id")));
-                crud.getTrabajo().setNombre(request.getParameter("nombre"));
-                crud.getTrabajo().setCategoria(request.getParameter("categoria"));
-                crud.getTrabajo().setAreaTrabajo(request.getParameter("areaTrabajo"));
-                crud.getTrabajo().setEmpresa(request.getParameter("empresa"));
-                crud.getTrabajo().setNivel(request.getParameter("nivel"));
-                crud.getTrabajo().setSueldo(request.getParameter("sueldo"));
-                crud.getTrabajo().setFunciones(request.getParameter("funciones"));
-                crud.getTrabajo().setCargoJefe(request.getParameter("cargoJefe"));
-                response.sendRedirect("web/empleo/modificar.jsp?mensaje=Empleo modificado correctamente");
-
-            } else if (accion.equals("eliminar")) {
+            if ("agregar".equals(accion)) {
                 CRUDempleo crud = new CRUDempleo();
                 crud.getTrabajo().setId(request.getParameter("id"));
-                crud.eliminarEmpleo();
-                response.sendRedirect("web/empleo/eliminar.jsp?mensaje=Empleo eliminado correctamente");
+                crud.getTrabajo().setNombre(request.getParameter("nombre"));
+                crud.getTrabajo().setCategoria(request.getParameter("categoria"));
+                crud.getTrabajo().setAreaTrabajo(request.getParameter("areaTrabajo"));
+                crud.getTrabajo().setEmpresa(request.getParameter("empresa"));
+                crud.getTrabajo().setNivel(request.getParameter("nivel"));
+                crud.getTrabajo().setSueldo(request.getParameter("sueldo"));
+                crud.getTrabajo().setFunciones(request.getParameter("funciones"));
+                crud.getTrabajo().setCargoJefe(request.getParameter("cargoJefe"));
+                crud.agregarEmpleo();
+                response.sendRedirect("web/empleo/agregar.jsp?mensaje=Empleo agregado correctamente");
 
-            } else if (accion.equals("buscar")) {
-                CRUDempleo crud = new CRUDempleo();
-                empleo trabajo = crud.consultarEmpleo(request.getParameter("id"));
-                request.getSession().setAttribute("empleo_buscar", trabajo);
-                response.sendRedirect("web/empleo/buscar.jsp");
+            } else if ("buscarModificar".equals(accion)) {
+                String id = request.getParameter("id");
+                try {
+                    CRUDempleo crud = new CRUDempleo();
+                    empleo trabajo = crud.consultarEmpleo(id);
+                    request.getSession().setAttribute("empleo_buscarModificar", trabajo);
+                    response.sendRedirect("web/empleo/modificar.jsp?mensaje=Empleo encontrado");
+                } catch (Exception e) {
+                    response.sendRedirect("web/empleo/modificar.jsp?mensaje=Error al consultar empleo: " + e.getMessage());
+                }
 
-            } else if (accion.equals("listar")) {
+            } else if ("modificar".equals(accion)) {
+                try {
+                    CRUDempleo crud = new CRUDempleo();
+                    crud.getTrabajo().setId(request.getParameter("id"));
+                    crud.getTrabajo().setNombre(request.getParameter("nombre"));
+                    crud.getTrabajo().setCategoria(request.getParameter("categoria"));
+                    crud.getTrabajo().setAreaTrabajo(request.getParameter("areaTrabajo"));
+                    crud.getTrabajo().setEmpresa(request.getParameter("empresa"));
+                    crud.getTrabajo().setNivel(request.getParameter("nivel"));
+                    crud.getTrabajo().setSueldo(request.getParameter("sueldo"));
+                    crud.getTrabajo().setFunciones(request.getParameter("funciones"));
+                    crud.getTrabajo().setCargoJefe(request.getParameter("cargoJefe"));
+                    crud.modificarEmpleo();
+                    response.sendRedirect("web/empleo/modificar.jsp?mensaje=Empleo modificado correctamente");
+                } catch (Exception e) {
+                    response.sendRedirect("web/empleo/modificar.jsp?mensaje=Error al modificar empleo: " + e.getMessage());
+                }
+
+            } else if ("buscarEliminar".equals(accion)) {
+                String id = request.getParameter("id");
+                try {
+                    CRUDempleo crud = new CRUDempleo();
+                    empleo trabajo = crud.consultarEmpleo(id);
+                    request.getSession().setAttribute("empleo_buscarEliminar", trabajo);
+                    response.sendRedirect("web/empleo/eliminar.jsp?mensaje=Empleo encontrado");
+                } catch (Exception e) {
+                    response.sendRedirect("web/empleo/eliminar.jsp?mensaje=Error al consultar empleo: " + e.getMessage());
+                }
+
+            } else if ("eliminar".equals(accion)) {
+                try {
+                    CRUDempleo crud = new CRUDempleo();
+                    String id = request.getParameter("id");
+                    crud.eliminarEmpleo(id);
+                    response.sendRedirect("web/empleo/eliminar.jsp?mensaje=Empleo eliminado correctamente");
+                } catch (Exception e) {
+                    response.sendRedirect("web/empleo/eliminar.jsp?mensaje=Error al eliminar empleo: " + e.getMessage());
+                }
+
+            } else if ("listar".equals(accion)) {
                 CRUDempleo crud = new CRUDempleo();
                 empleo[] listado = crud.listarTodos();
                 request.getSession().setAttribute("empleo_listar", listado);
                 response.sendRedirect("web/empleo/listar.jsp");
 
-            } else if (accion.equals("reporteEmpresa")) {
+            } else if ("reporteEmpresa".equals(accion)) {
                 String empresa = request.getParameter("empresa");
                 CRUDempleo crud = new CRUDempleo();
                 empleo[] listado = crud.listarPorEmpresa(empresa);
                 request.getSession().setAttribute("empleo_reporte_empresa", listado);
                 response.sendRedirect("web/empleo/reporteEmpleoEmpresa.jsp");
-            } else if (accion.equals("reporteAreatrabajo")) {
+
+            } else if ("reporteAreaTrabajo".equals(accion)) {
                 String areaTrabajo = request.getParameter("areaTrabajo");
                 CRUDempleo crud = new CRUDempleo();
                 empleo[] listado = crud.listarPorAreaTrabajo(areaTrabajo);
                 request.getSession().setAttribute("empleo_reporte_area_trabajo", listado);
                 response.sendRedirect("web/empleo/reporteEmpleoAreaTrabajo.jsp");
-            }else {
+
+            } else {
                 response.sendRedirect("web/mensaje.jsp?mensaje=Acción no reconocida");
             }
 
@@ -101,43 +122,20 @@ public class ServletEmpleo extends HttpServlet {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "ServletEmpleo: controla las acciones CRUD de empleos";
-    }// </editor-fold>
-
+    }
 }
