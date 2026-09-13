@@ -1,11 +1,11 @@
-# Imagen base de GlassFish
-FROM glassfish:5.0
+# Imagen base de Payara (servidor completo)
+FROM payara/server-full:5.2022
 
-# Copiar el WAR generado por NetBeans al dominio por defecto
-COPY dist/empleo_jsp.war /glassfish5/glassfish/domains/domain1/autodeploy/empleo_jsp.war
+# Copiar el WAR generado por NetBeans al directorio de despliegue automático
+COPY dist/empleo_jsp.war $PAYARA_PATH/glassfish/domains/domain1/autodeploy/empleo_jsp.war
 
-# Exponer el puerto de GlassFish
+# Exponer el puerto de Payara
 EXPOSE 8080
 
-# Comando para arrancar GlassFish
-CMD ["asadmin", "start-domain", "-v"]
+# Comando para arrancar el dominio por defecto
+CMD ["asadmin", "start-domain", "-v", "domain1"]
