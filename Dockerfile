@@ -1,11 +1,11 @@
-# Imagen base de Payara (servidor completo)
+# Imagen base ligera de Payara Micro
 FROM payara/micro:latest
 
-# Copiar el WAR generado por NetBeans al directorio de despliegue automático
-COPY dist/empleo_jsp.war $PAYARA_PATH/glassfish/domains/domain1/autodeploy/empleo_jsp.war
+# Copiar el WAR generado por NetBeans
+COPY dist/empleo_jsp.war /opt/payara/deployments/
 
-# Exponer el puerto de Payara
+# Exponer el puerto HTTP
 EXPOSE 8080
 
-# Comando para arrancar el dominio por defecto
-CMD ["asadmin", "start-domain", "-v", "domain1"]
+# Comando de arranque (Payara Micro despliega automáticamente lo que haya en /deployments)
+CMD ["java", "-jar", "/opt/payara/payara-micro.jar", "--deploy", "/opt/payara/deployments/empleo_jsp.war"]
