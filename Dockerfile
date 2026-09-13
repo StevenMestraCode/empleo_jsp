@@ -1,11 +1,10 @@
-FROM payara/micro:latest
+# Usar la imagen oficial de Tomcat
+FROM tomcat:9.0
 
-# Copiar el WAR
-COPY dist/empleo_jsp.war /opt/payara/deployments/
+# Copiar tu WAR generado por NetBeans al directorio de despliegue de Tomcat
+COPY dist/empleo_jsp.war /usr/local/tomcat/webapps/empleo_jsp.war
 
-# Exponer el puerto
+# Exponer el puerto HTTP
 EXPOSE 8080
 
-# Arranque con propiedad para habilitar REST API de Hazelcast
-CMD ["java", "-Dhz.network.rest-api.enabled=true", "-jar", "/opt/payara/payara-micro.jar", "--deploy", "/opt/payara/deployments/empleo_jsp.war"]
-
+# Comando por defecto: Tomcat ya arranca automáticamente
