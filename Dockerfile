@@ -1,5 +1,5 @@
 # Imagen base de Payara (servidor completo)
-FROM payara/server-full:latest
+FROM payara/micro:latest
 
 # Copiar el WAR generado por NetBeans al directorio de despliegue automático
 COPY dist/empleo_jsp.war $PAYARA_PATH/glassfish/domains/domain1/autodeploy/empleo_jsp.war
