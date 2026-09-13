@@ -7,5 +7,6 @@ COPY dist/empleo_jsp.war /opt/payara/deployments/
 # Exponer el puerto HTTP
 EXPOSE 8080
 
-# Comando de arranque (Payara Micro despliega automáticamente lo que haya en /deployments)
-CMD ["java", "-jar", "/opt/payara/payara-micro.jar", "--deploy", "/opt/payara/deployments/empleo_jsp.war"]
+# Comando de arranque: Payara Micro ya sabe desplegar lo que haya en /deployments
+ENTRYPOINT ["java", "-jar", "/opt/payara/payara-micro.jar"]
+CMD ["--deploy", "/opt/payara/deployments/empleo_jsp.war"]
