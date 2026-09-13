@@ -7,6 +7,5 @@ COPY dist/empleo_jsp.war /opt/payara/deployments/
 EXPOSE 8080
 
 # Arranque con propiedad para habilitar REST API de Hazelcast
-ENTRYPOINT ["java", "-Dhz.network.rest-api.enabled=true", "-jar", "/opt/payara/payara-micro.jar"]
-CMD ["--deploy", "/opt/payara/deployments/empleo_jsp.war"]
+CMD ["java", "-Dhz.network.rest-api.enabled=true", "-jar", "/opt/payara/payara-micro.jar", "--deploy", "/opt/payara/deployments/empleo_jsp.war"]
 
