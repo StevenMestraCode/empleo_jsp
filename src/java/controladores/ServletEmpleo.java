@@ -43,6 +43,18 @@ public class ServletEmpleo extends HttpServlet {
                 crud.agregarEmpleo();
                 response.sendRedirect("web/empleo/agregar.jsp?mensaje=Empleo agregado correctamente");
 
+            } else if ("buscar".equals(accion)) {
+                // NUEVO: Buscar un empleo por su ID y mostrarlo
+                String id = request.getParameter("id");
+                try {
+                    CRUDempleo crud = new CRUDempleo();
+                    empleo trabajo = crud.consultarEmpleo(id);
+                    request.getSession().setAttribute("empleo_buscar", trabajo);
+                    response.sendRedirect("web/empleo/buscar.jsp?mensaje=Empleo encontrado");
+                } catch (Exception e) {
+                    response.sendRedirect("web/empleo/buscar.jsp?mensaje=Error al consultar empleo: " + e.getMessage());
+                }
+
             } else if ("buscarModificar".equals(accion)) {
                 String id = request.getParameter("id");
                 try {
