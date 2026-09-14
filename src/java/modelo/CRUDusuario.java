@@ -28,55 +28,44 @@ public class CRUDusuario {
 
     // CREATE: método para agregar un usuario a la BD
     public void agregarUsuario() throws Exception {
-        // Validación: el ID no puede ser nulo ni vacío
-        if (alguien.getId() == null || alguien.getId().isEmpty()) {
-            throw new Exception("El ID es necesario");
-        }
-        // Sentencia SQL para insertar un nuevo registro
+        // El ID ya NO se envía, lo genera PostgreSQL (BIGSERIAL)
         String sqlInsert = "INSERT INTO usuarios"
-                + "(id, clave, nombre, correo, rol)"
-                + "VALUES (?, ?, ?, ?, ?)";
+                + "(clave, nombre, correo, rol)"
+                + "VALUES (?, ?, ?, ?)";
         try {
-            // Preparar la sentencia con parámetros
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlInsert);
-            sentenciaSQL.setString(1, alguien.getId());
-            
-            // CAMBIO BCrypt: Encriptar la clave antes de guardarla
+
+            // Encriptar la clave antes de guardarla
             String claveEncriptada = BCrypt.hashpw(alguien.getClave(), BCrypt.gensalt());
-            sentenciaSQL.setString(2, claveEncriptada);
-            
-            sentenciaSQL.setString(3, alguien.getNombre());
-            sentenciaSQL.setString(4, alguien.getCorreo());
-            sentenciaSQL.setString(5, alguien.getRol());
-            // Ejecutar el INSERT
+            sentenciaSQL.setString(1, claveEncriptada);
+            sentenciaSQL.setString(2, alguien.getNombre());
+            sentenciaSQL.setString(3, alguien.getCorreo());
+            sentenciaSQL.setString(4, alguien.getRol());
+
             baseDatos.actualizar(sentenciaSQL);
         } catch (Exception error) {
-            // Manejo de errores
-            throw new Exception("Error al agregar el usuario" + alguien.getId()
-                    + " <br/> explicacion: " + error.getMessage());
+            throw new Exception("Error al agregar el usuario <br/> explicacion: " + error.getMessage());
         } finally {
-            // Cerrar conexión
             baseDatos.desconectar();
         }
     }
 
     // UPDATE: método para modificar datos de un usuario existente
     public void modificarUsuario() throws Exception {
-        if (alguien.getId() == null || alguien.getId().isEmpty()) {
-            throw new Exception("El ID es necesario");
-        }
         String sqlUpdate = "UPDATE usuarios SET clave=?, nombre=?, correo=?, rol=? WHERE id=?";
         try {
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlUpdate);
-            
-            // CAMBIO BCrypt: Encriptar la nueva clave antes de actualizarla
+
+            // Encriptar la nueva clave antes de actualizarla
             String claveEncriptada = BCrypt.hashpw(alguien.getClave(), BCrypt.gensalt());
             sentenciaSQL.setString(1, claveEncriptada);
-            
             sentenciaSQL.setString(2, alguien.getNombre());
             sentenciaSQL.setString(3, alguien.getCorreo());
             sentenciaSQL.setString(4, alguien.getRol());
-            sentenciaSQL.setString(5, alguien.getId());
+
+            // ✅ AGREGADO: El id va en el WHERE (parámetro 5)
+            sentenciaSQL.setLong(5, alguien.getId());
+
             baseDatos.actualizar(sentenciaSQL);
         } catch (Exception error) {
             throw new Exception("Error al actualizar el usuario " + alguien.getId()
@@ -88,15 +77,10 @@ public class CRUDusuario {
 
     // DELETE: método para eliminar un usuario por su ID
     public void eliminarUsuario() throws Exception {
-        if (alguien.getId() == null || alguien.getId().isEmpty()) {
-            throw new Exception("El ID es necesario");
-        }
-        // Sentencia SQL para borrar un registro
         String sqlUpdate = "DELETE FROM usuarios WHERE id=?";
         try {
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlUpdate);
-            sentenciaSQL.setString(1, alguien.getId());
-            // Ejecutar el DELETE
+            sentenciaSQL.setLong(1, alguien.getId());
             baseDatos.actualizar(sentenciaSQL);
         } catch (Exception error) {
             throw new Exception("Error al eliminar el usuario" + alguien.getId()
@@ -113,38 +97,32 @@ public class CRUDusuario {
         }
         usuario alguien = null;
         ConexionBaseDatos baseDatos = null;
-        
-        // CAMBIO BCrypt: La consulta ahora solo busca por correo, no por clave
+
+        // La consulta ahora solo busca por correo, no por clave
         String sqlSelect = "SELECT * FROM usuarios WHERE correo=?";
-        
+
         try {
             baseDatos = new ConexionBaseDatos();
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
-            // Asignar parámetro de login (solo correo)
             sentenciaSQL.setString(1, correo);
             ResultSet resultado = baseDatos.consultar(sentenciaSQL);
-            
-            // Si existe el usuario, comparamos la clave con el hash
+
             if (resultado.next()) {
-                // Obtenemos el hash almacenado en la BD
                 String hashAlmacenado = resultado.getString("clave");
-                
-                // CAMBIO BCrypt: Verificar la clave con BCrypt.checkpw()
+
+                // Verificar la clave con BCrypt
                 if (BCrypt.checkpw(clave, hashAlmacenado)) {
-                    // Las credenciales son correctas, llenar el objeto
                     alguien = new usuario();
-                    alguien.setId(resultado.getString("id"));
+                    alguien.setId(resultado.getLong("id"));
                     alguien.setClave(hashAlmacenado);
                     alguien.setNombre(resultado.getString("nombre"));
                     alguien.setCorreo(resultado.getString("correo"));
                     alguien.setRol(resultado.getString("rol"));
                     return alguien;
                 } else {
-                    // La contraseña es incorrecta
                     throw new Exception("Error al consultar el usuario " + correo + "<br> Explicacion: ");
                 }
             } else {
-                // El usuario no existe
                 throw new Exception("Error al consultar el usuario " + correo + "<br> Explicacion: ");
             }
         } catch (Exception error) {
@@ -181,23 +159,22 @@ public class CRUDusuario {
         try {
             baseDatos = new ConexionBaseDatos();
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
-            sentenciaSQL.setString(1, nombre); // usamos el parámetro rol
+            sentenciaSQL.setString(1, nombre);
             ResultSet resultado = baseDatos.consultar(sentenciaSQL);
-            // Mover cursor al final para contar filas
+
             resultado.last();
             int total = resultado.getRow();
             if (total == 0) {
                 throw new Exception("No existen usuarios con el nombre: " + nombre);
             }
-            // Crear el arreglo con el tamaño exacto
+
             listado = new usuario[total];
-            // Volver al inicio del ResultSet
             resultado.beforeFirst();
             int index = 0;
-            // Recorrer resultados y llenar el array
+
             while (resultado.next()) {
                 usuario alguien = new usuario();
-                alguien.setId(resultado.getString("id"));
+                alguien.setId(resultado.getLong("id"));
                 alguien.setClave(resultado.getString("clave"));
                 alguien.setNombre(resultado.getString("nombre"));
                 alguien.setCorreo(resultado.getString("correo"));
@@ -226,28 +203,23 @@ public class CRUDusuario {
         try {
             baseDatos = new ConexionBaseDatos();
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
-            sentenciaSQL.setString(1, rol); // usamos el parámetro rol
+            sentenciaSQL.setString(1, rol);
 
             ResultSet resultado = baseDatos.consultar(sentenciaSQL);
 
-            // Mover cursor al final para contar filas
             resultado.last();
             int total = resultado.getRow();
             if (total == 0) {
                 throw new Exception("No existen usuarios con el rol: " + rol);
             }
 
-            // Crear el arreglo con el tamaño exacto
             listado = new usuario[total];
-
-            // Volver al inicio del ResultSet
             resultado.beforeFirst();
             int index = 0;
 
-            // Recorrer resultados y llenar el array
             while (resultado.next()) {
                 usuario alguien = new usuario();
-                alguien.setId(resultado.getString("id"));
+                alguien.setId(resultado.getLong("id"));
                 alguien.setClave(resultado.getString("clave"));
                 alguien.setNombre(resultado.getString("nombre"));
                 alguien.setCorreo(resultado.getString("correo"));
@@ -277,11 +249,12 @@ public class CRUDusuario {
         try {
             baseDatos = new ConexionBaseDatos();
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
-            sentenciaSQL.setString(1, id);
+            // Convertimos el String a long aquí
+            sentenciaSQL.setLong(1, Long.parseLong(id));
             ResultSet resultado = baseDatos.consultar(sentenciaSQL);
             if (resultado.next() == true) {
                 alguien = new usuario();
-                alguien.setId(resultado.getString("id"));
+                alguien.setId(resultado.getLong("id"));
                 alguien.setClave(resultado.getString("clave"));
                 alguien.setNombre(resultado.getString("nombre"));
                 alguien.setCorreo(resultado.getString("correo"));
@@ -320,12 +293,12 @@ public class CRUDusuario {
 
             while (resultado.next()) {
                 usuario alguien = new usuario();
-                alguien.setId(resultado.getString("id"));
+                alguien.setId(resultado.getLong("id"));
                 alguien.setClave(resultado.getString("clave"));
                 alguien.setNombre(resultado.getString("nombre"));
                 alguien.setCorreo(resultado.getString("correo"));
                 alguien.setRol(resultado.getString("rol"));
-                listado[index++] = alguien; // ✅ usamos contador manual
+                listado[index++] = alguien;
             }
             return listado;
         } catch (Exception error) {
@@ -337,7 +310,7 @@ public class CRUDusuario {
         }
     }
 
-    // Metodo para buscar al usuario por el correo colocado, necesario para poder enviar el correo para recuperacion de contraseña
+    // Metodo para buscar al usuario por el correo colocado
     public usuario buscarPorCorreo(String correo) throws Exception {
         usuario alguien = null;
         ConexionBaseDatos baseDatos = null;
@@ -349,7 +322,7 @@ public class CRUDusuario {
             ResultSet rs = baseDatos.consultar(ps);
             if (rs.next()) {
                 alguien = new usuario();
-                alguien.setId(rs.getString("id"));
+                alguien.setId(rs.getLong("id"));
                 alguien.setClave(rs.getString("clave"));
                 alguien.setNombre(rs.getString("nombre"));
                 alguien.setCorreo(rs.getString("correo"));

@@ -22,40 +22,34 @@ public class CRUDempleo {
         this.baseDatos = new ConexionBaseDatos();
     }
 
-    // CREATE
+    // CREATE: agregar un empleo (el id lo genera la BD con BIGSERIAL)
     public void agregarEmpleo() throws Exception {
-        if (trabajo.getId() == null || trabajo.getId().isEmpty()) {
-            throw new Exception("El ID es necesario y debe ser mayor a 0");
-        }
+        // El ID ya NO se envía, lo genera PostgreSQL
         String sqlInsert = "INSERT INTO empleo "
-                + "(id, nombre, categoria, areaTrabajo, empresa, nivel, sueldo, funciones, cargoJefe) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "(nombre, categoria, areaTrabajo, empresa, nivel, sueldo, funciones, cargoJefe) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlInsert);
-            sentenciaSQL.setString(1, trabajo.getId());
-            sentenciaSQL.setString(2, trabajo.getNombre());
-            sentenciaSQL.setString(3, trabajo.getCategoria());
-            sentenciaSQL.setString(4, trabajo.getAreaTrabajo());
-            sentenciaSQL.setString(5, trabajo.getEmpresa());
-            sentenciaSQL.setString(6, trabajo.getNivel());
-            sentenciaSQL.setString(7, trabajo.getSueldo());
-            sentenciaSQL.setString(8, trabajo.getFunciones());
-            sentenciaSQL.setString(9, trabajo.getCargoJefe());
+            sentenciaSQL.setString(1, trabajo.getNombre());
+            sentenciaSQL.setString(2, trabajo.getCategoria());
+            sentenciaSQL.setString(3, trabajo.getAreaTrabajo());
+            sentenciaSQL.setString(4, trabajo.getEmpresa());
+            sentenciaSQL.setString(5, trabajo.getNivel());
+            sentenciaSQL.setString(6, trabajo.getSueldo());
+            sentenciaSQL.setString(7, trabajo.getFunciones());
+            sentenciaSQL.setString(8, trabajo.getCargoJefe());
             baseDatos.actualizar(sentenciaSQL);
         } catch (Exception error) {
-            throw new Exception("Error al agregar el empleo " + trabajo.getId()
-                    + " <br/> Explicación: " + error.getMessage());
+            throw new Exception("Error al agregar el empleo <br/> Explicación: " + error.getMessage());
         } finally {
             baseDatos.desconectar();
         }
     }
 
-    // UPDATE
+    // UPDATE: modificar un empleo existente
     public void modificarEmpleo() throws Exception {
-        if (trabajo.getId() == null || trabajo.getId().isEmpty()) {
-            throw new Exception("El ID es necesario y debe ser mayor a 0");
-        }
-        String sqlUpdate = "UPDATE empleo SET nombre=?, categoria=?, areaTrabajo=?, empresa=?, nivel=?, sueldo=?, funciones=?, cargoJefe=? WHERE id=?";
+        String sqlUpdate = "UPDATE empleo SET nombre=?, categoria=?, areaTrabajo=?, "
+                + "empresa=?, nivel=?, sueldo=?, funciones=?, cargoJefe=? WHERE id=?";
         try {
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlUpdate);
             sentenciaSQL.setString(1, trabajo.getNombre());
@@ -66,7 +60,8 @@ public class CRUDempleo {
             sentenciaSQL.setString(6, trabajo.getSueldo());
             sentenciaSQL.setString(7, trabajo.getFunciones());
             sentenciaSQL.setString(8, trabajo.getCargoJefe());
-            sentenciaSQL.setString(9, trabajo.getId());
+            // El id va en el WHERE (parámetro 9)
+            sentenciaSQL.setLong(9, trabajo.getId());
             baseDatos.actualizar(sentenciaSQL);
         } catch (Exception error) {
             throw new Exception("Error al actualizar el empleo " + trabajo.getId()
@@ -76,7 +71,7 @@ public class CRUDempleo {
         }
     }
 
-    // DELETE
+    // DELETE: eliminar un empleo por su ID (recibe String del Servlet)
     public void eliminarEmpleo(String id) throws Exception {
         if (id == null || id.isEmpty()) {
             throw new Exception("El ID es necesario y debe ser mayor a 0");
@@ -84,7 +79,8 @@ public class CRUDempleo {
         String sqlDelete = "DELETE FROM empleo WHERE id=?";
         try {
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlDelete);
-            sentenciaSQL.setString(1, id);
+            // Convertimos el String a long
+            sentenciaSQL.setLong(1, Long.parseLong(id));
             int filas = baseDatos.actualizar(sentenciaSQL);
             if (filas == 0) {
                 throw new Exception("No se encontró empleo con ID " + id);
@@ -97,7 +93,7 @@ public class CRUDempleo {
         }
     }
 
-    // READ: consultar por ID
+    // READ: consultar por ID (recibe String del Servlet)
     public empleo consultarEmpleo(String id) throws Exception {
         if (id == null || id.isEmpty()) {
             throw new Exception("El ID es necesario y debe ser mayor a 0");
@@ -108,11 +104,12 @@ public class CRUDempleo {
         try {
             baseDatos = new ConexionBaseDatos();
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
-            sentenciaSQL.setString(1, id);
+            // Convertimos el String a long
+            sentenciaSQL.setLong(1, Long.parseLong(id));
             ResultSet resultado = baseDatos.consultar(sentenciaSQL);
             if (resultado.next()) {
                 trabajo = new empleo();
-                trabajo.setId(resultado.getString("id"));
+                trabajo.setId(resultado.getLong("id"));
                 trabajo.setNombre(resultado.getString("nombre"));
                 trabajo.setCategoria(resultado.getString("categoria"));
                 trabajo.setAreaTrabajo(resultado.getString("areaTrabajo"));
@@ -147,7 +144,7 @@ public class CRUDempleo {
             int index = 0;
             while (resultado.next()) {
                 trabajo = new empleo();
-                trabajo.setId(resultado.getString("id"));
+                trabajo.setId(resultado.getLong("id"));
                 trabajo.setNombre(resultado.getString("nombre"));
                 trabajo.setCategoria(resultado.getString("categoria"));
                 trabajo.setAreaTrabajo(resultado.getString("areaTrabajo"));
@@ -182,7 +179,7 @@ public class CRUDempleo {
             int i = 0;
             while (resultado.next()) {
                 trabajo = new empleo();
-                trabajo.setId(resultado.getString("id"));
+                trabajo.setId(resultado.getLong("id"));
                 trabajo.setNombre(resultado.getString("nombre"));
                 trabajo.setCategoria(resultado.getString("categoria"));
                 trabajo.setAreaTrabajo(resultado.getString("areaTrabajo"));
@@ -217,7 +214,7 @@ public class CRUDempleo {
             int i = 0;
             while (resultado.next()) {
                 trabajo = new empleo();
-                trabajo.setId(resultado.getString("id"));
+                trabajo.setId(resultado.getLong("id"));
                 trabajo.setNombre(resultado.getString("nombre"));
                 trabajo.setCategoria(resultado.getString("categoria"));
                 trabajo.setAreaTrabajo(resultado.getString("areaTrabajo"));

@@ -1,7 +1,7 @@
 /*
  * ServletUsuario: controla las acciones CRUD de Usuario
  */
-package controladores; // Ajusta el paquete según tu proyecto
+package controladores;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import modelo.CRUDusuario;
 import modelo.usuario;
 import utilidades.EnviarCorreo;
-import org.mindrot.jbcrypt.BCrypt; // <-- IMPORTANTE: Import de BCrypt
+import org.mindrot.jbcrypt.BCrypt;
 
 @WebServlet(name = "ServletUsuario", urlPatterns = {"/usuario"})
 public class ServletUsuario extends HttpServlet {
@@ -26,7 +26,7 @@ public class ServletUsuario extends HttpServlet {
         try {
             if ("agregar".equals(accion)) {
                 CRUDusuario crud = new CRUDusuario();
-                crud.getAlguien().setId(request.getParameter("id"));
+                // El id lo genera la BD (BIGSERIAL), no se envía
                 crud.getAlguien().setClave(request.getParameter("clave"));
                 crud.getAlguien().setNombre(request.getParameter("nombre"));
                 crud.getAlguien().setCorreo(request.getParameter("correo"));
@@ -39,27 +39,27 @@ public class ServletUsuario extends HttpServlet {
                 try {
                     CRUDusuario crud = new CRUDusuario();
                     usuario alguien = crud.consultarUsuario(id);
-                    // Guardamos el usuario encontrado en sesión con clave genérica
                     request.getSession().setAttribute("usuario_buscar", alguien);
                     response.sendRedirect("web/usuario/buscar.jsp?mensaje=Usuario encontrado");
                 } catch (Exception e) {
                     response.sendRedirect("web/usuario/buscar.jsp?mensaje=Error al consultar usuario: " + e.getMessage());
                 }
+                
             } else if ("buscarModificar".equals(accion)) {
                 String id = request.getParameter("id");
                 try {
                     CRUDusuario crud = new CRUDusuario();
                     usuario alguien = crud.consultarUsuario(id);
-                    // Guardamos el usuario encontrado en sesión con clave específica
                     request.getSession().setAttribute("usuario_buscarModificar", alguien);
                     response.sendRedirect("web/usuario/modificar.jsp?mensaje=Usuario encontrado");
                 } catch (Exception e) {
                     response.sendRedirect("web/usuario/modificar.jsp?mensaje=Error al consultar usuario: " + e.getMessage());
                 }
+                
             } else if ("modificar".equals(accion)) {
                 try {
                     CRUDusuario crud = new CRUDusuario();
-                    crud.getAlguien().setId(request.getParameter("id"));
+                    crud.getAlguien().setId(Long.parseLong(request.getParameter("id")));
                     crud.getAlguien().setClave(request.getParameter("clave"));
                     crud.getAlguien().setNombre(request.getParameter("nombre"));
                     crud.getAlguien().setCorreo(request.getParameter("correo"));
@@ -69,8 +69,8 @@ public class ServletUsuario extends HttpServlet {
                 } catch (Exception e) {
                     response.sendRedirect("web/usuario/modificar.jsp?mensaje=Error al modificar usuario: " + e.getMessage());
                 }
+                
             } else if ("buscarEliminar".equals(accion)) {
-                // Buscar usuario y mostrarlo en eliminar.jsp
                 String id = request.getParameter("id");
                 try {
                     CRUDusuario crud = new CRUDusuario();
@@ -84,7 +84,7 @@ public class ServletUsuario extends HttpServlet {
             } else if ("eliminar".equals(accion)) {
                 try {
                     CRUDusuario crud = new CRUDusuario();
-                    crud.getAlguien().setId(request.getParameter("id"));
+                    crud.getAlguien().setId(Long.parseLong(request.getParameter("id")));
                     crud.eliminarUsuario();
                     response.sendRedirect("web/usuario/eliminar.jsp?mensaje=Usuario eliminado correctamente");
                 } catch (Exception e) {
@@ -121,7 +121,7 @@ public class ServletUsuario extends HttpServlet {
                 usuario u = crud.buscarPorCorreo(correo);
 
                 if (u != null) {
-                    // CAMBIO BCrypt: Generar una clave temporal (no se puede recuperar la original)
+                    // Generar una clave temporal (no se puede recuperar la original)
                     String claveTemporal = "temp" + System.currentTimeMillis();
                     try {
                         // Encriptar la nueva clave temporal con BCrypt
@@ -143,7 +143,7 @@ public class ServletUsuario extends HttpServlet {
 
             } else if ("cerrarSesion".equals(accion)) {
                 try {
-                    request.getSession().invalidate(); // invalida toda la sesión
+                    request.getSession().invalidate();
                     response.sendRedirect("web/usuario/login.jsp?mensaje=Sesion cerrada correctamente");
                 } catch (Exception e) {
                     response.sendRedirect("web/mensaje.jsp?mensaje=Error al cerrar sesión: " + e.getMessage());

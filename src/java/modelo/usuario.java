@@ -12,7 +12,7 @@ package modelo;
  */
 // clase usuario que contiene lo atributos de la tabla usuario
 public class usuario {
-    private String id;
+    private long id;
     private String clave;
     private String nombre;
     private String correo;
@@ -20,11 +20,11 @@ public class usuario {
 
 // getter and setters para manejar los atributos.
 // getter and setter ID
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 // getter and setter clave

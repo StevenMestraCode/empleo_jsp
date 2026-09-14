@@ -24,10 +24,6 @@
             <form action="<%=request.getContextPath()%>/usuario?accion=agregar" method="post">
                 <table>
                     <tr>
-                        <th style="text-align: right;">ID:</th>
-                        <td><input type="text" name="id" required/></td>
-                    </tr>
-                    <tr>
                         <th style="text-align: right;">Clave:</th>
                         <td><input type="password" name="clave" required/></td>
                     </tr>

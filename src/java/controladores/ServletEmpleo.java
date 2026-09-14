@@ -31,7 +31,7 @@ public class ServletEmpleo extends HttpServlet {
         try {
             if ("agregar".equals(accion)) {
                 CRUDempleo crud = new CRUDempleo();
-                crud.getTrabajo().setId(request.getParameter("id"));
+                // El id lo genera la BD (BIGSERIAL), NO se envía
                 crud.getTrabajo().setNombre(request.getParameter("nombre"));
                 crud.getTrabajo().setCategoria(request.getParameter("categoria"));
                 crud.getTrabajo().setAreaTrabajo(request.getParameter("areaTrabajo"));
@@ -57,7 +57,8 @@ public class ServletEmpleo extends HttpServlet {
             } else if ("modificar".equals(accion)) {
                 try {
                     CRUDempleo crud = new CRUDempleo();
-                    crud.getTrabajo().setId(request.getParameter("id"));
+                    // Convertimos el String del request a long
+                    crud.getTrabajo().setId(Long.parseLong(request.getParameter("id")));
                     crud.getTrabajo().setNombre(request.getParameter("nombre"));
                     crud.getTrabajo().setCategoria(request.getParameter("categoria"));
                     crud.getTrabajo().setAreaTrabajo(request.getParameter("areaTrabajo"));
@@ -87,6 +88,7 @@ public class ServletEmpleo extends HttpServlet {
                 try {
                     CRUDempleo crud = new CRUDempleo();
                     String id = request.getParameter("id");
+                    // El CRUD recibe String y convierte internamente a long
                     crud.eliminarEmpleo(id);
                     response.sendRedirect("web/empleo/eliminar.jsp?mensaje=Empleo eliminado correctamente");
                 } catch (Exception e) {

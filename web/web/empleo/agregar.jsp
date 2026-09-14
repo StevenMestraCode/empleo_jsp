@@ -24,10 +24,6 @@
             <form action="<%=request.getContextPath()%>/empleo?accion=agregar" method="post">
                 <table>
                     <tr>
-                        <th style="text-align: right;">ID:</th>
-                        <td><input type="text" name="id" required/></td>
-                    </tr>
-                    <tr>
                         <th style="text-align: right;">Nombre:</th>
                         <td><input type="text" name="nombre" required/></td>
                     </tr>
