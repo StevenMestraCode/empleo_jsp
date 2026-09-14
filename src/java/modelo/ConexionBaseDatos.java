@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package modelo;
 
 import java.sql.Connection;
@@ -13,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ConexionBaseDatos {
+
     // Variables de entorno (Render)
     private String url = System.getenv("DB_URL");
     private String usuario = System.getenv("DB_USER");
@@ -47,8 +47,8 @@ public class ConexionBaseDatos {
         } catch (ClassNotFoundException ex) {
             throw new Exception("Error de Driver: " + ex.getMessage());
         } catch (SQLException ex) {
-            throw new Exception("Error de Conexión \n Código:" + ex.getErrorCode() +
-                                " Explicación:" + ex.getMessage());
+            throw new Exception("Error de Conexión \n Código:" + ex.getErrorCode()
+                    + " Explicación:" + ex.getMessage());
         }
     }
 
@@ -57,8 +57,8 @@ public class ConexionBaseDatos {
         try {
             return sentencia.executeUpdate();
         } catch (SQLException ex) {
-            throw new SQLException("Error al ejecutar sentencia BD \n Código:" +
-                                   ex.getErrorCode() + " Explicación:" + ex.getMessage());
+            throw new SQLException("Error al ejecutar sentencia BD \n Código:"
+                    + ex.getErrorCode() + " Explicación:" + ex.getMessage());
         }
     }
 
@@ -86,32 +86,68 @@ public class ConexionBaseDatos {
     // Método para crear una sentencia preparada
     public PreparedStatement crearSentencia(String sql) throws Exception {
         try {
-            return conexion.prepareStatement(sql);
+            return conexion.prepareStatement(sql,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
         } catch (SQLException ex) {
-            throw new SQLException("Error al crear sentencia \n Código:" +
-                                   ex.getErrorCode() + " Explicación:" + ex.getMessage());
+            throw new SQLException("Error al crear sentencia: " + ex.getMessage());
         }
     }
 
     // Getters y Setters
-    public String getDriver() { return driver; }
-    public void setDriver(String driver) { this.driver = driver; }
+    public String getDriver() {
+        return driver;
+    }
 
-    public String getUrl() { return url; }
-    public void setUrl(String url) { this.url = url; }
+    public void setDriver(String driver) {
+        this.driver = driver;
+    }
 
-    public String getUsuario() { return usuario; }
-    public void setUsuario(String usuario) { this.usuario = usuario; }
+    public String getUrl() {
+        return url;
+    }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-    public Connection getConexion() { return conexion; }
-    public void setConexion(Connection conexion) { this.conexion = conexion; }
+    public String getUsuario() {
+        return usuario;
+    }
 
-    public PreparedStatement getSentencia() { return sentencia; }
-    public void setSentencia(PreparedStatement sentencia) { this.sentencia = sentencia; }
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
 
-    public ResultSet getFilasConsulta() { return filasConsulta; }
-    public void setFilasConsulta(ResultSet filasConsulta) { this.filasConsulta = filasConsulta; }
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Connection getConexion() {
+        return conexion;
+    }
+
+    public void setConexion(Connection conexion) {
+        this.conexion = conexion;
+    }
+
+    public PreparedStatement getSentencia() {
+        return sentencia;
+    }
+
+    public void setSentencia(PreparedStatement sentencia) {
+        this.sentencia = sentencia;
+    }
+
+    public ResultSet getFilasConsulta() {
+        return filasConsulta;
+    }
+
+    public void setFilasConsulta(ResultSet filasConsulta) {
+        this.filasConsulta = filasConsulta;
+    }
 }
