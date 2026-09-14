@@ -52,7 +52,7 @@ Ubicada en la carpeta `web/`. Contiene:
 - **JSP generales**: `index.jsp`, `mensaje.jsp`.
 
 ---
-
+```
 ## Estructura del Proyecto
 empleo_jsp/
 ├── src/
@@ -97,7 +97,7 @@ empleo_jsp/
 ├── dist/
 │ └── empleo_jsp.war
 └── README.md
-
+```
 ---
 
 ## Base de Datos
