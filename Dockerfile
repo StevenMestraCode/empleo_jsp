@@ -1,20 +1,23 @@
 # Usar la imagen oficial de Tomcat
 FROM tomcat:9.0
 
-# Copiar tu WAR generado por NetBeans al directorio de despliegue de Tomcat
-COPY dist/empleo_jsp.war /usr/local/tomcat/webapps/empleo_jsp.war
+# Eliminar la app por defecto de Tomcat (opcional pero recomendado)
+RUN rm -rf /usr/local/tomcat/webapps/*
+
+# Copiar tu WAR. Lo renombramos a ROOT.war para que cargue en la raíz (/)
+COPY dist/empleo_jsp.war /usr/local/tomcat/webapps/ROOT.war
 
 # --- CONFIGURACIÓN PARA RENDER ---
 
-# 1. Modificar server.xml para que Tomcat escuche en el puerto que Render le asigne ($PORT)
-RUN sed -i 's/port="8080"/port="${PORT}"/g' /usr/local/tomcat/conf/server.xml
+# 1. Modificar server.xml para que Tomcat escuche en el puerto 10000 directamente
+#    Render usa el puerto 10000 por defecto para sus web services.
+RUN sed -i 's/port="8080"/port="10000"/g' /usr/local/tomcat/conf/server.xml
 
-# 2. Crear la ruta de Health Check para que Render sepa que la app está viva
-# Esto crea un archivo en http://tu-app.onrender.com/healthz
+# 2. Crear la ruta de Health Check
 RUN mkdir -p /usr/local/tomcat/webapps/ROOT/healthz
 RUN echo "OK" > /usr/local/tomcat/webapps/ROOT/healthz/index.html
 
-# Exponer el puerto (informativo, Render usará el 10000 por defecto)
+# Exponer el puerto 10000
 EXPOSE 10000
 
 # Comando por defecto: Tomcat ya arranca automáticamente
