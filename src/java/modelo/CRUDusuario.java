@@ -7,6 +7,7 @@ package modelo;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.mindrot.jbcrypt.BCrypt; // <-- IMPORTANTE: Import de BCrypt
 
 /**
  *
@@ -39,7 +40,11 @@ public class CRUDusuario {
             // Preparar la sentencia con parámetros
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlInsert);
             sentenciaSQL.setString(1, alguien.getId());
-            sentenciaSQL.setString(2, alguien.getClave());
+            
+            // CAMBIO BCrypt: Encriptar la clave antes de guardarla
+            String claveEncriptada = BCrypt.hashpw(alguien.getClave(), BCrypt.gensalt());
+            sentenciaSQL.setString(2, claveEncriptada);
+            
             sentenciaSQL.setString(3, alguien.getNombre());
             sentenciaSQL.setString(4, alguien.getCorreo());
             sentenciaSQL.setString(5, alguien.getRol());
@@ -63,7 +68,11 @@ public class CRUDusuario {
         String sqlUpdate = "UPDATE usuarios SET clave=?, nombre=?, correo=?, rol=? WHERE id=?";
         try {
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlUpdate);
-            sentenciaSQL.setString(1, alguien.getClave());
+            
+            // CAMBIO BCrypt: Encriptar la nueva clave antes de actualizarla
+            String claveEncriptada = BCrypt.hashpw(alguien.getClave(), BCrypt.gensalt());
+            sentenciaSQL.setString(1, claveEncriptada);
+            
             sentenciaSQL.setString(2, alguien.getNombre());
             sentenciaSQL.setString(3, alguien.getCorreo());
             sentenciaSQL.setString(4, alguien.getRol());
@@ -97,32 +106,46 @@ public class CRUDusuario {
         }
     }
 
-    // LOGIN: método para iniciar sesión con correo y clave
+    // LOGIN: método para iniciar sesión con correo y clave (MODIFICADO CON BCRYPT)
     public usuario inicioSesion(String correo, String clave) throws Exception {
         if (correo == null || correo.isEmpty() || clave == null || clave.isEmpty()) {
             throw new Exception("El correo y la clave son necesarias");
         }
         usuario alguien = null;
         ConexionBaseDatos baseDatos = null;
-        String sqlSelect = "SELECT * FROM usuarios WHERE correo=? and clave=?";
+        
+        // CAMBIO BCrypt: La consulta ahora solo busca por correo, no por clave
+        String sqlSelect = "SELECT * FROM usuarios WHERE correo=?";
+        
         try {
             baseDatos = new ConexionBaseDatos();
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
-            // Asignar parámetros de login
+            // Asignar parámetro de login (solo correo)
             sentenciaSQL.setString(1, correo);
-            sentenciaSQL.setString(2, clave);
             ResultSet resultado = baseDatos.consultar(sentenciaSQL);
-            // Si existe el usuario, llenar el objeto con sus datos
-            if (resultado.next() == true) {
-                alguien = new usuario();
-                alguien.setId(resultado.getString("id"));
-                alguien.setClave(resultado.getString("clave"));
-                alguien.setNombre(resultado.getString("nombre"));
-                alguien.setCorreo(resultado.getString("correo"));
-                alguien.setRol(resultado.getString("rol"));
-                return alguien;
+            
+            // Si existe el usuario, comparamos la clave con el hash
+            if (resultado.next()) {
+                // Obtenemos el hash almacenado en la BD
+                String hashAlmacenado = resultado.getString("clave");
+                
+                // CAMBIO BCrypt: Verificar la clave con BCrypt.checkpw()
+                if (BCrypt.checkpw(clave, hashAlmacenado)) {
+                    // Las credenciales son correctas, llenar el objeto
+                    alguien = new usuario();
+                    alguien.setId(resultado.getString("id"));
+                    alguien.setClave(hashAlmacenado);
+                    alguien.setNombre(resultado.getString("nombre"));
+                    alguien.setCorreo(resultado.getString("correo"));
+                    alguien.setRol(resultado.getString("rol"));
+                    return alguien;
+                } else {
+                    // La contraseña es incorrecta
+                    throw new Exception("Error al consultar el usuario " + correo + "<br> Explicacion: ");
+                }
             } else {
-                throw new Exception("Error al consultar el usuario" + correo + "<br> Explicacion: ");
+                // El usuario no existe
+                throw new Exception("Error al consultar el usuario " + correo + "<br> Explicacion: ");
             }
         } catch (Exception error) {
             throw new Exception(error.getMessage() + "Error en Correo o en la contraseña");
@@ -130,6 +153,21 @@ public class CRUDusuario {
             if (baseDatos != null) {
                 baseDatos.desconectar();
             }
+        }
+    }
+
+    // NUEVO MÉTODO BCrypt: Actualizar solo la clave (usado en recuperación de contraseña)
+    public void actualizarClave(String correo, String hashClave) throws Exception {
+        String sqlUpdate = "UPDATE usuarios SET clave=? WHERE correo=?";
+        try {
+            PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlUpdate);
+            sentenciaSQL.setString(1, hashClave);
+            sentenciaSQL.setString(2, correo);
+            baseDatos.actualizar(sentenciaSQL);
+        } catch (Exception error) {
+            throw new Exception("Error al actualizar la clave: " + error.getMessage());
+        } finally {
+            baseDatos.desconectar();
         }
     }
 
@@ -176,7 +214,7 @@ public class CRUDusuario {
         }
     }
 
-// Método para listar usuarios por rol
+    // Método para listar usuarios por rol
     public usuario[] listarPorRol(String rol) throws Exception {
         if (rol == null || rol.isEmpty()) {
             throw new Exception("El rol es necesario para consultar usuarios");
@@ -299,7 +337,7 @@ public class CRUDusuario {
         }
     }
 
-// Metodo para buscar al usuario por el correo colocado, necesario para poder enviar el correo para recuperacion de contraseña
+    // Metodo para buscar al usuario por el correo colocado, necesario para poder enviar el correo para recuperacion de contraseña
     public usuario buscarPorCorreo(String correo) throws Exception {
         usuario alguien = null;
         ConexionBaseDatos baseDatos = null;

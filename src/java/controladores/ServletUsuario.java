@@ -1,7 +1,9 @@
-package controladores;
+/*
+ * ServletUsuario: controla las acciones CRUD de Usuario
+ */
+package controladores; // Ajusta el paquete según tu proyecto
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -10,11 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import modelo.CRUDusuario;
 import modelo.usuario;
 import utilidades.EnviarCorreo;
+import org.mindrot.jbcrypt.BCrypt; // <-- IMPORTANTE: Import de BCrypt
 
-/**
- *
- * @author ASUS
- */
 @WebServlet(name = "ServletUsuario", urlPatterns = {"/usuario"})
 public class ServletUsuario extends HttpServlet {
 
@@ -122,11 +121,18 @@ public class ServletUsuario extends HttpServlet {
                 usuario u = crud.buscarPorCorreo(correo);
 
                 if (u != null) {
-                    String claveTemporal = u.getClave();
+                    // CAMBIO BCrypt: Generar una clave temporal (no se puede recuperar la original)
+                    String claveTemporal = "temp" + System.currentTimeMillis();
                     try {
+                        // Encriptar la nueva clave temporal con BCrypt
+                        String hashTemporal = BCrypt.hashpw(claveTemporal, BCrypt.gensalt());
+                        // Actualizar la clave en la base de datos
+                        crud.actualizarClave(correo, hashTemporal);
+                        
                         EnviarCorreo.enviar(correo, "Recuperación de clave",
-                                "Tu clave actual es: " + claveTemporal);
-                        response.sendRedirect("web/usuario/login.jsp?mensaje=Clave enviada al correo");
+                                "Tu nueva clave temporal es: " + claveTemporal +
+                                "\nPor favor, cámbiala al iniciar sesión.");
+                        response.sendRedirect("web/usuario/login.jsp?mensaje=Clave temporal enviada al correo");
                     } catch (Exception e) {
                         e.printStackTrace();
                         response.sendRedirect("web/usuario/recuperarClave.jsp?mensaje=Error al enviar correo");
