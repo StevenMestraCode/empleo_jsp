@@ -39,8 +39,8 @@
                         <th style="text-align: right;">Rol:</th>
                         <td>
                             <select name="rol">
-                                <option value="Administrador">Administrador</option>
-                                <option value="Cliente">Cliente</option>
+                                <option value="Administrador">ADMIN</option>
+                                <option value="Cliente">USER</option>
                             </select>
                         </td>
                     </tr>
