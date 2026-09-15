@@ -39,8 +39,8 @@
             Correo: <input type="text" name="correo" value="<%= alguien.getCorreo()%>"/><br/>
             Rol:
             <select name="rol">
-                <option value="Administrador" <%= "ADMIN".equals(alguien.getRol()) ? "selected" : ""%>>Administrador</option>
-                <option value="Cliente" <%= "USER".equals(alguien.getRol()) ? "selected" : ""%>>Cliente</option>
+                <option value="ADMIN" <%= "ADMIN".equals(alguien.getRol()) ? "selected" : ""%>>Administrador</option>
+                <option value="USER" <%= "USER".equals(alguien.getRol()) ? "selected" : ""%>>Cliente</option>
             </select><br/>
             <input type="submit" value="Guardar Cambios"/>
         </form>
