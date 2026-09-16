@@ -5,58 +5,35 @@
  */
 package utilidades;
 
-import java.util.Properties;
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
-/**
- *
- * @author ASUS
- */
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 public class EnviarCorreo {
-
     public static void enviar(String destinatario, String asunto, String cuerpo) throws Exception {
-        // Leer credenciales desde variables de entorno
-        final String remitente = System.getenv("DB_EMAIL");
-        final String clave = System.getenv("DB_CLAVE");
-
-        // Validar que las variables estén configuradas
-        if (remitente == null || remitente.isEmpty()) {
-            throw new Exception("La variable de entorno DB_EMAIL no está configurada");
-        }
-        if (clave == null || clave.isEmpty()) {
-            throw new Exception("La variable de entorno DB_CLAVE no está configurada");
+        String apiKey = System.getenv("RESEND_API");
+        if (apiKey == null || apiKey.isEmpty()) {
+            throw new Exception("La variable RESEND_API no está configurada");
         }
 
-        // Configuración de propiedades SMTP para Gmail
-        Properties props = new Properties();
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.port", "465");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
+        String json = String.format(
+            "{\"from\":\"onboarding@resend.dev\",\"to\":\"%s\",\"subject\":\"%s\",\"text\":\"%s\"}",
+            destinatario, asunto, cuerpo.replace("\n", "\\n")
+        );
 
-        // Sesión autenticada
-        Session session = Session.getInstance(props, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(remitente, clave);
-            }
-        });
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create("https://api.resend.com/emails"))
+            .header("Authorization", "Bearer " + apiKey)
+            .header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(json))
+            .build();
 
-        // Crear el mensaje
-        Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(remitente));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
-        message.setSubject(asunto);
-        message.setText(cuerpo);
-
-        // Enviar
-        Transport.send(message);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        
+        if (response.statusCode() != 200) {
+            throw new Exception("Error al enviar correo: " + response.body());
+        }
     }
 }
