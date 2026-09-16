@@ -3,12 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package utilidades;
 
 import java.util.Properties;
-import javax.mail.*;
-import javax.mail.internet.*;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 /**
  *
  * @author ASUS
@@ -17,9 +22,17 @@ import javax.mail.internet.*;
 public class EnviarCorreo {
 
     public static void enviar(String destinatario, String asunto, String cuerpo) throws Exception {
-        // Tu correo y contraseña de aplicación
-        final String remitente = "stevenmestra3@gmail.com";
-        final String clave = "sbzzspynwucffupt"; // contraseña de aplicación generada en Gmail
+        // Leer credenciales desde variables de entorno
+        final String remitente = System.getenv("DB_EMAIL");
+        final String clave = System.getenv("DB_CLAVE");
+
+        // Validar que las variables estén configuradas
+        if (remitente == null || remitente.isEmpty()) {
+            throw new Exception("La variable de entorno DB_EMAIL no está configurada");
+        }
+        if (clave == null || clave.isEmpty()) {
+            throw new Exception("La variable de entorno DB_CLAVE no está configurada");
+        }
 
         // Configuración de propiedades SMTP para Gmail
         Properties props = new Properties();
