@@ -1,5 +1,5 @@
 # Usar la imagen oficial de Tomcat (con Java 17 para estabilidad)
-FROM tomcat:9.0-jdk17-temurin
+FROM tomcat:9.0-jdk21-temurin
 
 # Eliminar la app por defecto de Tomcat
 RUN rm -rf /usr/local/tomcat/webapps/*
