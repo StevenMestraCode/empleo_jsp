@@ -135,10 +135,12 @@ public class ServletUsuario extends HttpServlet {
                         response.sendRedirect("web/usuario/login.jsp?mensaje=Clave temporal enviada al correo");
                     } catch (Exception e) {
                         e.printStackTrace();
-                        response.sendRedirect("web/usuario/recuperarClave.jsp?mensaje=Error al enviar correo");
+                        // ✅ CORREGIDO: recuperacionClave.jsp (con "cion")
+                        response.sendRedirect("web/usuario/recuperacionClave.jsp?mensaje=Error al enviar correo");
                     }
                 } else {
-                    response.sendRedirect("web/usuario/recuperarClave.jsp?mensaje=Correo no registrado");
+                    // ✅ CORREGIDO: recuperacionClave.jsp (con "cion")
+                    response.sendRedirect("web/usuario/recuperacionClave.jsp?mensaje=Correo no registrado");
                 }
 
             } else if ("cerrarSesion".equals(accion)) {
